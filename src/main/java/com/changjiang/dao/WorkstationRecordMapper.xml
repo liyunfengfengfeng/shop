@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.WorkstationRecordDao">
+    <resultMap id="result_WorkstationRecord_Map" type="com.changjiang.entity.WorkstationRecord">
+        <id column="WorkstationRecord0" property="id" />
+        <result column="WorkstationRecord1" property="userId" />
+        <result column="WorkstationRecord2" property="userName" />
+        <result column="WorkstationRecord3" property="userPhone" />
+        <result column="WorkstationRecord4" property="goWorkTime" />
+        <result column="WorkstationRecord5" property="leaveWorkTime" />
+        <result column="WorkstationRecord6" property="counterId" />
+        <result column="WorkstationRecord7" property="sonAreaId" />
+        <result column="WorkstationRecord8" property="workDay" />
+        <result column="WorkstationRecord9" property="storeId" />
+        <result column="WorkstationRecord10" property="workStationId" />
+        <result column="WorkstationRecord11" property="number" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="workstation_record_Column">
+        workstation_record.id as WorkstationRecord0
+        ,workstation_record.user_id as WorkstationRecord1
+        ,workstation_record.user_name as WorkstationRecord2
+        ,workstation_record.user_phone as WorkstationRecord3
+        ,workstation_record.go_work_time as WorkstationRecord4
+        ,workstation_record.leave_work_time as WorkstationRecord5
+        ,workstation_record.counter_id as WorkstationRecord6
+        ,workstation_record.son_area_id as WorkstationRecord7
+        ,workstation_record.work_day as WorkstationRecord8
+        ,workstation_record.store_id as WorkstationRecord9
+        ,workstation_record.work_station_id as WorkstationRecord10
+        ,workstation_record.number as WorkstationRecord11
+    </sql>
+
+    <select id="getWorkstationRecordRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from workstation_record
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectWorkstationRecord" parameterType="com.changjiang.common.Assist"  resultMap="result_WorkstationRecord_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="workstation_record_Column" /> 
+            </otherwise>
+        </choose>
+        from workstation_record
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectWorkstationRecordById" parameterType="java.lang.Integer" resultMap="result_WorkstationRecord_Map">
+        select 
+            <include refid="workstation_record_Column" /> 
+        from workstation_record
+        where workstation_record.id = #{id}
+    </select> 
+
+
+    <insert id="insertWorkstationRecord" parameterType="com.changjiang.entity.WorkstationRecord">
+        insert into workstation_record(id,user_id,user_name,user_phone,go_work_time,leave_work_time,counter_id,son_area_id,work_day,store_id,work_station_id,number) 
+        values(#{id},#{userId},#{userName},#{userPhone},#{goWorkTime},#{leaveWorkTime},#{counterId},#{sonAreaId},#{workDay},#{storeId},#{workStationId},#{number})
+    </insert>
+
+    <insert id="insertNonEmptyWorkstationRecord" parameterType="com.changjiang.entity.WorkstationRecord">
+        insert into workstation_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="userPhone != null">user_phone,</if>
+            <if test="goWorkTime != null">go_work_time,</if>
+            <if test="leaveWorkTime != null">leave_work_time,</if>
+            <if test="counterId != null">counter_id,</if>
+            <if test="sonAreaId != null">son_area_id,</if>
+            <if test="workDay != null">work_day,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="workStationId != null">work_station_id,</if>
+            <if test="number != null">number,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="userId != null"> #{userId},</if>
+            <if test="userName != null"> #{userName},</if>
+            <if test="userPhone != null"> #{userPhone},</if>
+            <if test="goWorkTime != null"> #{goWorkTime},</if>
+            <if test="leaveWorkTime != null"> #{leaveWorkTime},</if>
+            <if test="counterId != null"> #{counterId},</if>
+            <if test="sonAreaId != null"> #{sonAreaId},</if>
+            <if test="workDay != null"> #{workDay},</if>
+            <if test="storeId != null"> #{storeId},</if>
+            <if test="workStationId != null"> #{workStationId},</if>
+            <if test="number != null"> #{number},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteWorkstationRecordById" parameterType="java.lang.Integer">
+        delete from workstation_record
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteWorkstationRecord" parameterType="com.changjiang.common.Assist">
+        delete from workstation_record
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateWorkstationRecordById" parameterType="com.changjiang.entity.WorkstationRecord">
+        update workstation_record set
+            user_id=#{userId}
+            ,user_name=#{userName}
+            ,user_phone=#{userPhone}
+            ,go_work_time=#{goWorkTime}
+            ,leave_work_time=#{leaveWorkTime}
+            ,counter_id=#{counterId}
+            ,son_area_id=#{sonAreaId}
+            ,work_day=#{workDay}
+            ,store_id=#{storeId}
+            ,work_station_id=#{workStationId}
+            ,number=#{number}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyWorkstationRecordById" parameterType="com.changjiang.entity.WorkstationRecord">
+        update workstation_record
+        <set>
+            <if test="userId != null">
+                user_id=#{userId},
+            </if>
+            <if test="userName != null">
+                user_name=#{userName},
+            </if>
+            <if test="userPhone != null">
+                user_phone=#{userPhone},
+            </if>
+            <if test="goWorkTime != null">
+                go_work_time=#{goWorkTime},
+            </if>
+            <if test="leaveWorkTime != null">
+                leave_work_time=#{leaveWorkTime},
+            </if>
+            <if test="counterId != null">
+                counter_id=#{counterId},
+            </if>
+            <if test="sonAreaId != null">
+                son_area_id=#{sonAreaId},
+            </if>
+            <if test="workDay != null">
+                work_day=#{workDay},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+            <if test="workStationId != null">
+                work_station_id=#{workStationId},
+            </if>
+            <if test="number != null">
+                number=#{number},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateWorkstationRecord" parameterType="map">
+        update workstation_record
+        <set>
+                id=#{enti.id},
+                user_id=#{enti.userId},
+                user_name=#{enti.userName},
+                user_phone=#{enti.userPhone},
+                go_work_time=#{enti.goWorkTime},
+                leave_work_time=#{enti.leaveWorkTime},
+                counter_id=#{enti.counterId},
+                son_area_id=#{enti.sonAreaId},
+                work_day=#{enti.workDay},
+                store_id=#{enti.storeId},
+                work_station_id=#{enti.workStationId},
+                number=#{enti.number},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyWorkstationRecord" parameterType="map">
+        update workstation_record
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.userId != null">
+                user_id=#{enti.userId},
+            </if>
+            <if test="enti.userName != null">
+                user_name=#{enti.userName},
+            </if>
+            <if test="enti.userPhone != null">
+                user_phone=#{enti.userPhone},
+            </if>
+            <if test="enti.goWorkTime != null">
+                go_work_time=#{enti.goWorkTime},
+            </if>
+            <if test="enti.leaveWorkTime != null">
+                leave_work_time=#{enti.leaveWorkTime},
+            </if>
+            <if test="enti.counterId != null">
+                counter_id=#{enti.counterId},
+            </if>
+            <if test="enti.sonAreaId != null">
+                son_area_id=#{enti.sonAreaId},
+            </if>
+            <if test="enti.workDay != null">
+                work_day=#{enti.workDay},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+            <if test="enti.workStationId != null">
+                work_station_id=#{enti.workStationId},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

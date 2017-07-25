@@ -1,0 +1,214 @@
+<div class="tpl-content-wrapper">
+    <div class="tpl-content-page-title">
+        添加用户
+    </div>
+    <ol class="am-breadcrumb">
+        <li><a href="#" class="am-icon-home">首页</a></li>
+        <li><a href="#">用户管理</a></li>
+        <li class="am-active">添加用户</li>
+    </ol>
+    <div class="tpl-portlet-components">
+        <div class="portlet-title">
+            <div class="caption font-green bold">
+                添加用户
+            </div>
+        </div>
+        <!--选项卡-->
+        <div class="am-tabs" data-am-tabs id="tabs">
+            <ul class="am-tabs-nav am-nav am-nav-tabs">
+                <li class="am-active"><a href="#tab1">添加用户登录信息</a></li>
+                <li><a href="#tab2">添加用户个人信息</a></li>
+            </ul>
+            <div class="am-tabs-bd">
+                <div class="am-tab-panel am-active" id="tab1">
+                    <div class="tpl-block ">
+                        <div class="am-g tpl-amazeui-form">
+                            <div class="am-u-sm-12 am-u-md-9">
+                                <form class="am-form am-form-horizontal" id="doc-vld-msg" data-am-validator>
+                                    <div class="am-form-group">
+                                        <label for="username" class="am-u-sm-3 am-form-label">用户名 / Username</label>
+                                        <div class="am-u-sm-9">
+                                            <input type="text" id="username" placeholder="输入你的用户名 / Username" required minlength="4" maxlength="12"
+                                                   ng-model="user.username">
+                                            <small>4位到12位任意字符与数字</small>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="password" class="am-u-sm-3 am-form-label">密码 / Password</label>
+                                        <div class="am-u-sm-9">
+                                            <input type="text" id="password" placeholder="输入你的密码 / Password" required minlength="6" maxlength="16"
+                                                   ng-model="user.password">
+                                            <small>6到16位任意字符与数字</small>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="user-role" class="am-u-sm-3 am-form-label">角色 / Role</label>
+                                        <div class="am-u-sm-9">
+                                            <select data-am-selected="{searchBox: 1}" id="user-role" ng-model="user.role" ng-options="x.name for x in roles">
+                                                <option value="">请选择一个角色</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group" ng-show="showStore">
+                                        <label for="store" class="am-u-sm-3 am-form-label">店铺<span class="tpl-form-line-small-title">Store</span></label>
+                                        <div class="am-u-sm-9">
+                                            <select data-am-selected="{searchBox: 1}" id="store" ng-model="user.store" ng-options="x.name for x in stores">
+                                                <option value="">请选择一家店</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <div class="am-u-sm-9 am-u-sm-push-3">
+                                            <button type="button" class="am-btn am-btn-secondary" ng-click="save()">保存</button>
+                                            <button type="button" class="am-btn am-btn-secondary" ng-click="cancel()">取消</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="am-tab-panel" id="tab2">
+                    <div class="tpl-block ">
+                        <div class="am-g tpl-amazeui-form">
+                            <div class="am-u-sm-12 am-u-md-9">
+                                <form class="am-form am-form-horizontal" id="form2">
+                                    <div class="am-form-group">
+                                        <label for="real-name" class="am-u-sm-3 am-form-label">真实姓名 / Name</label>
+                                        <div class="am-u-sm-9">
+                                            <input type="text" id="real-name" placeholder="真实姓名 / Name" required minlength="2" maxlength="10"
+                                                   ng-model="userInformation.realname">
+                                            <small>输入你的真实名字，让我们记住你。</small>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label class="am-u-sm-3 am-form-label">性别： </label>
+                                        <label class="am-radio-inline">
+                                            <input type="radio"  value="男" name="docVlGender" required ng-model="userInformation.sex"> 男
+                                        </label>
+                                        <label class="am-radio-inline">
+                                            <input type="radio" name="docVlGender" ng-model="userInformation.sex"> 女
+                                        </label>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="id-card" class="am-u-sm-3 am-form-label">身份证号 /ID Card </label>
+                                        <div class="am-u-sm-9">
+                                            <input type="text" id="id-card" placeholder="身份证号码 / ID Card" required minlength="18" maxlength="18"
+                                                   ng-model="userInformation.idNumber">
+                                            <small>输入身份证号码</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="am-form-group">
+                                        <label for="user-phone" class="am-u-sm-3 am-form-label">电话 / Telephone</label>
+                                        <div class="am-u-sm-9">
+                                            <input type="tel" id="user-phone" placeholder="输入你的电话号码 / Telephone" ng-model="userInformation.phone">
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="user-QQ" class="am-u-sm-3 am-form-label">QQ</label>
+                                        <div class="am-u-sm-9">
+                                            <input type="number" pattern="[0-9]*" id="user-QQ" placeholder="输入你的QQ号码" ng-model="userInformation.qq">
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="user-wechat" class="am-u-sm-3 am-form-label">微信 / Wechat</label>
+                                        <div class="am-u-sm-9">
+                                            <input type="text" id="user-wechat" placeholder="输入你的微信 / Wechat" ng-model="userInformation.wechat">
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="user-email" class="am-u-sm-3 am-form-label">电子邮件 / Email</label>
+                                        <div class="am-u-sm-9">
+                                            <input type="email" id="user-email" placeholder="输入你的电子邮件 / Email" required
+                                                   ng-model="userInformation.email">
+                                            <small>输入正确邮箱格式</small>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="duty" class="am-u-sm-3 am-form-label">职务</label>
+                                        <div class="am-u-sm-9">
+                                            <select id="duty" required ng-model="duty" ng-options="x.name for x in duties" class="am-u-sm-9">
+                                                <option value="">-=请选择一项=-</option>
+                                            </select>
+                                            <span class="am-form-caret"></span>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="workstation" class="am-u-sm-3 am-form-label">岗位</label>
+                                        <div class="am-u-sm-9">
+                                            <select id="workstation" required ng-model="workstation" ng-options="x.name for x in workstations"
+                                                    class="am-u-sm-9">
+                                                <option value="">-=请选择一项=-</option>
+                                            </select>
+                                            <span class="am-form-caret"></span>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="user-address" class="am-u-sm-3 am-form-label">住址 / Address</label>
+                                        <div class="am-u-sm-9">
+                                            <input type="text" id="user-address" placeholder="输入你的住址 / Address" required
+                                                   ng-model="userInformation.address">
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <label for="user-intro" class="am-u-sm-3 am-form-label">简介 / Introduction</label>
+                                        <div class="am-u-sm-9">
+                                            <textarea class="" rows="5" id="user-intro" placeholder="输入个人简介" maxlength="500"
+                                                      ng-model="userInformation.dbDesc"></textarea>
+                                            <small>250字以内写出你的一生...</small>
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <div class="am-u-sm-9 am-u-sm-push-3">
+                                            <button type="button" class="am-btn am-btn-success" ng-click="addUserAndInformation()">提交</button>
+                                            <button type="button" class="am-btn am-btn-secondary" ng-click="cancel()">取消</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function() {
+        $('#doc-vld-msg').validator({
+            onValid: function(validity) {
+                $(validity.field).closest('.am-form-group').find('.am-alert').hide();
+            },
+            onInValid: function(validity) {
+                let $field = $(validity.field);
+                let $group = $field.closest('.am-form-group');
+                let $alert = $group.find('.am-alert');
+                // 使用自定义的提示信息 或 插件内置的提示信息
+                let msg = $field.data('validationMessage') || this.getValidationMessage(validity);
+                if (!$alert.length) {
+                    $alert = $('<div class="am-alert am-alert-danger"></div>').hide().
+                    appendTo($group);
+                }
+                $alert.html(msg).show();
+            }
+        });
+        $('#form2').validator({
+            onValid: function(validity) {
+                $(validity.field).closest('.am-form-group').find('.am-alert').hide();
+            },
+            onInValid: function(validity) {
+                let $field = $(validity.field);
+                let $group = $field.closest('.am-form-group');
+                let $alert = $group.find('.am-alert');
+                // 使用自定义的提示信息 或 插件内置的提示信息
+                let msg = $field.data('validationMessage') || this.getValidationMessage(validity);
+                if (!$alert.length) {
+                    $alert = $('<div class="am-alert am-alert-danger"></div>').hide().
+                    appendTo($group);
+                }
+                $alert.html(msg).show();
+            }
+        });
+    });
+</script>

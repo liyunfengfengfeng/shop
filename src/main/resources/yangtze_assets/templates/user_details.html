@@ -1,0 +1,67 @@
+<div class="tpl-content-wrapper">
+    <div class="tpl-content-page-title">
+        编辑用户
+    </div>
+    <ol class="am-breadcrumb">
+        <li><a href="#" class="am-icon-home">首页</a></li>
+        <li><a href="#">用户管理</a></li>
+        <li class="am-active">编辑用户</li>
+    </ol>
+    <div class="tpl-portlet-components">
+        <div class="portlet-title">
+            <div class="caption font-green bold">
+                编辑用户
+            </div>
+        </div>
+        <div class="tpl-block ">
+            <div class="am-g tpl-amazeui-form">
+                <div class="am-u-sm-12 am-u-md-9">
+                    <form class="am-form am-form-horizontal" id="doc-vld-msg" data-am-validator>
+                        <div class="am-form-group">
+                            <label for="username" class="am-u-sm-3 am-form-label">用户名 / Username</label>
+                            <div class="am-u-sm-9">
+                                <input type="text" id="username" ng-value="user.username">
+                            </div>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="password" class="am-u-sm-3 am-form-label">密码 / Password</label>
+                            <div class="am-u-sm-9">
+                                <input type="text" id="password" ng-value="user.password">
+                            </div>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="user-role" class="am-u-sm-3 am-form-label">角色 <span class="tpl-form-line-small-title">Role</span></label>
+                            <div class="am-u-sm-9">
+                                <select data-am-selected="{searchBox: 1}" id="user-role" ng-options="x.name for x in roles" ng-model="user.role">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="am-form-group">
+                            <label class="am-u-sm-3 am-form-label">是否启用： </label>
+                            <label class="am-radio-inline">
+                                <input type="radio"  value="0" name="docVlGender" required ng-checked="user.enabled==0" ng-click="checked(0)"> 启用
+                            </label>
+                            <label class="am-radio-inline">
+                                <input type="radio" name="docVlGender" value="1" ng-checked="user.enabled==1" ng-click="checked(1)"> 不启用
+                            </label>
+                        </div>
+                        <div class="am-form-group" ng-show="showStore">
+                            <label for="store" class="am-u-sm-3 am-form-label">店铺<span class="tpl-form-line-small-title">Store</span></label>
+                            <div class="am-u-sm-9">
+                                <select data-am-selected="{searchBox: 1}" id="store">
+                                    <option value="a">-The.CC</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="am-form-group">
+                            <div class="am-u-sm-9 am-u-sm-push-3">
+                                <button type="button" class="am-btn am-btn-success" ng-click="changeUser()">保存</button>
+                                <a href="#/user" class="am-btn am-btn-secondary">取消</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

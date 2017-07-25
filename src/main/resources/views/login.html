@@ -1,0 +1,53 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>长江汇智</title>
+	<meta name="description" content="这是一个 index 页面">
+	<meta name="keywords" content="index">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="icon" type="image/png" href="assets/i/favicon.png">
+	<meta name="apple-mobile-web-app-title" content="Amaze UI" />
+	<link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+	<link rel="stylesheet" href="assets/css/admin.css">
+	<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-type="login">
+<div class="am-g myapp-login">
+	<div class="myapp-login-logo-block  tpl-login-max">
+		<div class="myapp-login-logo-text">
+			<div class="myapp-login-logo-text">
+				&nbsp;&nbsp;&nbsp;长江<span> 汇智</span> <i class="am-icon-skyatlas"></i>
+			</div>
+		</div>
+		<div class="login-font" style="position: relative ;padding-right: 5%">
+			<i>管理</i>  <span>系统</span>
+		</div>
+		<div class="am-u-sm-10 login-am-center">
+			<form class="am-form" action="login" method="post">
+				<fieldset>
+					<div class="am-form-group">
+						<input type="text" class="" name="username" id="username" placeholder="输入用户名" required>
+					</div>
+					<span style="color: red " th:if="${result eq '1'}">用户名或密码错误</span>
+					<div class="am-form-group">
+						<input type="password" class="" name="password" id="password" placeholder="输入密码" required>
+					</div>
+					<div class="am-form-group">
+						<img src=""><!--验证码-->
+						<input type="text" class="" id="security_code" placeholder="请输入验证码">
+					</div>
+					<p><button type="submit" class="am-btn am-btn-default">登录</button></p>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

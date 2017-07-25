@@ -1,0 +1,105 @@
+<div class="tpl-content-wrapper">
+    <div class="tpl-content-page-title">
+        用户管理
+    </div>
+    <ol class="am-breadcrumb">
+        <li><a href="#" class="am-icon-home">首页</a></li>
+        <li class="am-active">用户管理</li>
+    </ol>
+    <div class="tpl-portlet-components">
+        <div class="portlet-title">
+            <div class="caption font-green bold">
+                <span class="am-icon-user"></span> 用户基本信息
+            </div>
+            <div class="tpl-portlet-input tpl-fz-ml">
+                <div class="portlet-input input-small input-inline">
+                    <div class="input-icon right">
+                        <i class="am-icon-search"></i>
+                        <input type="text" class="form-control form-control-solid" placeholder="搜索..."> </div>
+                </div>
+            </div>
+        </div>
+        <div class="tpl-block">
+            <div class="am-g">
+                <div class="am-u-sm-12 am-u-md-6">
+                    <div class="am-btn-toolbar">
+                        <div class="am-btn-group am-btn-group-xs">
+                            <a href="#/add_user" class="am-btn am-btn-default am-btn-success"><span class="am-icon-plus"></span> 新增</a>
+                            <button type="button" class="am-btn am-btn-default am-btn-danger" ng-click="deleteManyUser()">
+                                <span class="am-icon-trash-o"></span> 删除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="am-u-sm-12 am-u-md-3">
+                    <div class="am-form-group-sm">
+                        <select data-am-selected="{btnSize: 'sm'}" ng-change="changeData(style)" ng-model="style">
+                            <option value="option1" selected>类型</option>
+                            <option value="0">启用</option>
+                            <option value="1">非启用</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="am-g">
+                <div class="am-u-sm-12">
+                    <form class="am-form">
+                        <table class="am-table am-table-striped am-table-hover table-main">
+                            <thead>
+                            <tr>
+                                <th class="table-check">
+                                    <input type="checkbox" class="tpl-table-fz-check" ng-model="checkAll" ng-change="checkBoxAllChanged()">
+                                </th>
+                                <th class="table-id">序号</th>
+                                <th class="table-type">用户名</th>
+                                <th class="table-type">密码</th>
+                                <th class="table-author am-hide-sm-only">权限</th>
+                                <th class="table-date am-hide-sm-only">是否启用</th>
+                                <th class="table-set">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="user in users">
+                                <td><input type="checkbox" ng-model="user.check" ng-change="checkBoxChanged()"></td>
+                                <td>{{$index+1}}</td>
+                                <td>{{user.username}}</td>
+                                <td>{{user.password}}</td>
+                                <td class="am-hide-sm-only">{{user.role.name}}</td>
+                                <td class="am-hide-sm-only">{{user.style}}</td>
+                                <td>
+                                    <div class="am-btn-toolbar">
+                                        <div class="am-btn-group am-btn-group-xs">
+                                            <a href="#/user_details/{{user.id}}" class="am-btn am-btn-default am-btn-xs am-text-secondary">
+                                                <span class="am-icon-pencil-square-o"></span>编辑
+                                            </a>
+                                            <button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only" ng-click="deleteSingleUser(user.id)">
+                                                <span class="am-icon-trash-o"></span>删除
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="am-cf">
+
+                            <div class="am-fr">
+                                <ul class="am-pagination tpl-pagination">
+                                    <li class="am-disabled"><a href="#">«</a></li>
+                                    <li class="am-active"><a href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#">5</a></li>
+                                    <li><a href="#">»</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <hr>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="tpl-alert"></div>
+    </div>
+</div>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.DutyDao">
+    <resultMap id="result_Duty_Map" type="com.changjiang.entity.Duty">
+        <id column="Duty0" property="id" />
+        <result column="Duty1" property="name" />
+        <result column="Duty2" property="dbDesc" />
+        <result column="Duty3" property="gradeId" />
+        <result column="Duty4" property="storeId" />
+        <result column="Duty5" property="state" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="duty_Column">
+        duty.id as Duty0
+        ,duty.name as Duty1
+        ,duty.db_desc as Duty2
+        ,duty.grade_id as Duty3
+        ,duty.store_id as Duty4
+        ,duty.state as Duty5
+    </sql>
+
+    <select id="getDutyRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from duty
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectDuty" parameterType="com.changjiang.common.Assist"  resultMap="result_Duty_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="duty_Column" /> 
+            </otherwise>
+        </choose>
+        from duty
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectDutyById" parameterType="java.lang.Integer" resultMap="result_Duty_Map">
+        select 
+            <include refid="duty_Column" /> 
+        from duty
+        where duty.id = #{id}
+    </select> 
+
+	<!-- 通过id查询duty以及其下的userinfomation -->
+	<select id="findDutyAndUserInfo" parameterType="int" resultMap="result_Duty_Map2">
+        select * from duty where id=#{id}
+     </select>
+	<resultMap id="result_Duty_Map2" type="com.changjiang.entity.Duty">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="db_desc" property="dbDesc" />
+        <result column="grade_id" property="gradeId" />
+        <result column="store_id" property="storeId" />
+        <result column="state" property="state" />
+        <collection property="userInformations" ofType="
+com.changjiang.entity.UserInformation" column="id" select="getUserInfo">
+        </collection>
+    </resultMap>
+	<select id="getUserInfo" parameterType="int" resultType="com.changjiang.entity.UserInformation">
+        SELECT * FROM user_information WHERE duty_id=#{id}
+     </select>
+
+
+
+    <insert id="insertDuty" parameterType="com.changjiang.entity.Duty">
+        insert into duty(id,name,db_desc,grade_id,store_id,state) 
+        values(#{id},#{name},#{dbDesc},#{gradeId},#{storeId},#{state})
+    </insert>
+
+    <insert id="insertNonEmptyDuty" parameterType="com.changjiang.entity.Duty">
+        insert into duty
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="gradeId != null">grade_id,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="state != null">state,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="gradeId != null"> #{gradeId},</if>
+            <if test="storeId != null"> #{storeId},</if>
+            <if test="state != null"> #{state},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteDutyById" parameterType="java.lang.Integer">
+        delete from duty
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDuty" parameterType="com.changjiang.common.Assist">
+        delete from duty
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateDutyById" parameterType="com.changjiang.entity.Duty">
+        update duty set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,grade_id=#{gradeId}
+            ,store_id=#{storeId}
+            ,state=#{state}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyDutyById" parameterType="com.changjiang.entity.Duty">
+        update duty
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="gradeId != null">
+                grade_id=#{gradeId},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateDuty" parameterType="map">
+        update duty
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                grade_id=#{enti.gradeId},
+                store_id=#{enti.storeId},
+                state=#{enti.state},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyDuty" parameterType="map">
+        update duty
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.gradeId != null">
+                grade_id=#{enti.gradeId},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

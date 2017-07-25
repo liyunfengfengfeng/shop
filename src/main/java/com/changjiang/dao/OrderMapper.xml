@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.OrderDao">
+    <resultMap id="result_Order_Map" type="com.changjiang.entity.Order">
+        <id column="Order0" property="id" />
+        <result column="Order1" property="number" />
+        <result column="Order2" property="typeId" />
+        <result column="Order3" property="counterId" />
+        <result column="Order4" property="orderTime" />
+        <result column="Order5" property="checkoutTime" />
+        <result column="Order6" property="receivables" />
+        <result column="Order7" property="paidinAccount" />
+        <result column="Order8" property="reminderNumber" />
+        <result column="Order9" property="operatorId" />
+        <result column="Order10" property="vipId" />
+        <result column="Order11" property="oneBillForAllId" />
+        <result column="Order12" property="storeNumber" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="order_Column">
+        db_order.id as Order0
+        ,db_order.number as Order1
+        ,db_order.type_id as Order2
+        ,db_order.counter_id as Order3
+        ,db_order.order_time as Order4
+        ,db_order.checkout_time as Order5
+        ,db_order.receivables as Order6
+        ,db_order.paidin_account as Order7
+        ,db_order.reminder_number as Order8
+        ,db_order.operator_id as Order9
+        ,db_order.vip_id as Order10
+        ,db_order.one_bill_for_all_id as Order11
+        ,db_order.store_number as Order12
+    </sql>
+
+    <select id="getOrderRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from db_order
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectOrder" parameterType="com.changjiang.common.Assist"  resultMap="result_Order_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="order_Column" /> 
+            </otherwise>
+        </choose>
+        from db_order
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectOrderById" parameterType="java.lang.Integer" resultMap="result_Order_Map">
+        select 
+            <include refid="order_Column" /> 
+        from db_order
+        where db_order.id = #{id}
+    </select> 
+
+
+
+
+	<select id="selectAllOrder"  resultMap="result_Order_Map">
+        select 
+            <include refid="order_Column" /> 
+        from db_order
+        
+    </select> 
+
+    <insert id="insertOrder" parameterType="com.changjiang.entity.Order">
+        insert into db_order(id,number,type_id,counter_id,order_time,checkout_time,receivables,paidin_account,reminder_number,operator_id,vip_id,one_bill_for_all_id,store_number) 
+        values(#{id},#{number},#{typeId},#{counterId},#{orderTime},#{checkoutTime},#{receivables},#{paidinAccount},#{reminderNumber},#{operatorId},#{vipId},#{oneBillForAllId},#{storeNumber})
+    </insert>
+
+    <insert id="insertNonEmptyOrder" parameterType="com.changjiang.entity.Order">
+        insert into db_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="typeId != null">type_id,</if>
+            <if test="counterId != null">counter_id,</if>
+            <if test="orderTime != null">order_time,</if>
+            <if test="checkoutTime != null">checkout_time,</if>
+            <if test="receivables != null">receivables,</if>
+            <if test="paidinAccount != null">paidin_account,</if>
+            <if test="reminderNumber != null">reminder_number,</if>
+            <if test="operatorId != null">operator_id,</if>
+            <if test="vipId != null">vip_id,</if>
+            <if test="oneBillForAllId != null">one_bill_for_all_id,</if>
+            <if test="storeNumber != null">store_number,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="typeId != null"> #{typeId},</if>
+            <if test="counterId != null"> #{counterId},</if>
+            <if test="orderTime != null"> #{orderTime},</if>
+            <if test="checkoutTime != null"> #{checkoutTime},</if>
+            <if test="receivables != null"> #{receivables},</if>
+            <if test="paidinAccount != null"> #{paidinAccount},</if>
+            <if test="reminderNumber != null"> #{reminderNumber},</if>
+            <if test="operatorId != null"> #{operatorId},</if>
+            <if test="vipId != null"> #{vipId},</if>
+            <if test="oneBillForAllId != null"> #{oneBillForAllId},</if>
+            <if test="storeNumber != null"> #{storeNumber},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteOrderById" parameterType="java.lang.Integer">
+        delete from db_order
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteOrder" parameterType="com.changjiang.common.Assist">
+        delete from db_order
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateOrderById" parameterType="com.changjiang.entity.Order">
+        update db_order set
+            number=#{number}
+            ,type_id=#{typeId}
+            ,counter_id=#{counterId}
+            ,order_time=#{orderTime}
+            ,checkout_time=#{checkoutTime}
+            ,receivables=#{receivables}
+            ,paidin_account=#{paidinAccount}
+            ,reminder_number=#{reminderNumber}
+            ,operator_id=#{operatorId}
+            ,vip_id=#{vipId}
+            ,one_bill_for_all_id=#{oneBillForAllId}
+            ,store_number=#{storeNumber}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyOrderById" parameterType="com.changjiang.entity.Order">
+        update db_order
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="typeId != null">
+                type_id=#{typeId},
+            </if>
+            <if test="counterId != null">
+                counter_id=#{counterId},
+            </if>
+            <if test="orderTime != null">
+                order_time=#{orderTime},
+            </if>
+            <if test="checkoutTime != null">
+                checkout_time=#{checkoutTime},
+            </if>
+            <if test="receivables != null">
+                receivables=#{receivables},
+            </if>
+            <if test="paidinAccount != null">
+                paidin_account=#{paidinAccount},
+            </if>
+            <if test="reminderNumber != null">
+                reminder_number=#{reminderNumber},
+            </if>
+            <if test="operatorId != null">
+                operator_id=#{operatorId},
+            </if>
+            <if test="vipId != null">
+                vip_id=#{vipId},
+            </if>
+            <if test="oneBillForAllId != null">
+                one_bill_for_all_id=#{oneBillForAllId},
+            </if>
+            <if test="storeNumber != null">
+                store_number=#{storeNumber},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateOrder" parameterType="map">
+        update db_order
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                type_id=#{enti.typeId},
+                counter_id=#{enti.counterId},
+                order_time=#{enti.orderTime},
+                checkout_time=#{enti.checkoutTime},
+                receivables=#{enti.receivables},
+                paidin_account=#{enti.paidinAccount},
+                reminder_number=#{enti.reminderNumber},
+                operator_id=#{enti.operatorId},
+                vip_id=#{enti.vipId},
+                one_bill_for_all_id=#{enti.oneBillForAllId},
+                store_number=#{enti.storeNumber},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyOrder" parameterType="map">
+        update db_order
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.typeId != null">
+                type_id=#{enti.typeId},
+            </if>
+            <if test="enti.counterId != null">
+                counter_id=#{enti.counterId},
+            </if>
+            <if test="enti.orderTime != null">
+                order_time=#{enti.orderTime},
+            </if>
+            <if test="enti.checkoutTime != null">
+                checkout_time=#{enti.checkoutTime},
+            </if>
+            <if test="enti.receivables != null">
+                receivables=#{enti.receivables},
+            </if>
+            <if test="enti.paidinAccount != null">
+                paidin_account=#{enti.paidinAccount},
+            </if>
+            <if test="enti.reminderNumber != null">
+                reminder_number=#{enti.reminderNumber},
+            </if>
+            <if test="enti.operatorId != null">
+                operator_id=#{enti.operatorId},
+            </if>
+            <if test="enti.vipId != null">
+                vip_id=#{enti.vipId},
+            </if>
+            <if test="enti.oneBillForAllId != null">
+                one_bill_for_all_id=#{enti.oneBillForAllId},
+            </if>
+            <if test="enti.storeNumber != null">
+                store_number=#{enti.storeNumber},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

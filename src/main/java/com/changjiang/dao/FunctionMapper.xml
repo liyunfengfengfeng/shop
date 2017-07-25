@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.FunctionDao">
+    <resultMap id="result_Function_Map" type="com.changjiang.entity.Function">
+        <id column="Function0" property="id" />
+        <result column="Function1" property="functionName" />
+        <result column="Function2" property="upperLevelId" />
+        <result column="Function3" property="currentLevel" />
+        <result column="Function4" property="icon" />
+        <result column="Function5" property="groupId" />
+        <result column="Function6" property="orderId" />
+        <result column="Function7" property="urls" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="function_Column">
+        function.id as Function0
+        ,function.function_name as Function1
+        ,function.upper_level_id as Function2
+        ,function.current_level as Function3
+        ,function.icon as Function4
+        ,function.group_id as Function5
+        ,function.order_id as Function6
+        ,function.urls as Function7
+    </sql>
+
+    <select id="getFunctionRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from function
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectFunction" parameterType="com.changjiang.common.Assist"  resultMap="result_Function_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="function_Column" /> 
+            </otherwise>
+        </choose>
+        from function
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectFunctionById" parameterType="java.lang.Integer" resultMap="result_Function_Map">
+        select 
+            <include refid="function_Column" /> 
+        from function
+        where function.id = #{id}
+    </select> 
+
+
+    <insert id="insertFunction" parameterType="com.changjiang.entity.Function">
+        insert into function(id,function_name,upper_level_id,current_level,icon,group_id,order_id,urls) 
+        values(#{id},#{functionName},#{upperLevelId},#{currentLevel},#{icon},#{groupId},#{orderId},#{urls})
+    </insert>
+
+    <insert id="insertNonEmptyFunction" parameterType="com.changjiang.entity.Function">
+        insert into function
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="functionName != null">function_name,</if>
+            <if test="upperLevelId != null">upper_level_id,</if>
+            <if test="currentLevel != null">current_level,</if>
+            <if test="icon != null">icon,</if>
+            <if test="groupId != null">group_id,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="urls != null">urls,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="functionName != null"> #{functionName},</if>
+            <if test="upperLevelId != null"> #{upperLevelId},</if>
+            <if test="currentLevel != null"> #{currentLevel},</if>
+            <if test="icon != null"> #{icon},</if>
+            <if test="groupId != null"> #{groupId},</if>
+            <if test="orderId != null"> #{orderId},</if>
+            <if test="urls != null"> #{urls},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteFunctionById" parameterType="java.lang.Integer">
+        delete from function
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteFunction" parameterType="com.changjiang.common.Assist">
+        delete from function
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateFunctionById" parameterType="com.changjiang.entity.Function">
+        update function set
+            function_name=#{functionName}
+            ,upper_level_id=#{upperLevelId}
+            ,current_level=#{currentLevel}
+            ,icon=#{icon}
+            ,group_id=#{groupId}
+            ,order_id=#{orderId}
+            ,urls=#{urls}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyFunctionById" parameterType="com.changjiang.entity.Function">
+        update function
+        <set>
+            <if test="functionName != null">
+                function_name=#{functionName},
+            </if>
+            <if test="upperLevelId != null">
+                upper_level_id=#{upperLevelId},
+            </if>
+            <if test="currentLevel != null">
+                current_level=#{currentLevel},
+            </if>
+            <if test="icon != null">
+                icon=#{icon},
+            </if>
+            <if test="groupId != null">
+                group_id=#{groupId},
+            </if>
+            <if test="orderId != null">
+                order_id=#{orderId},
+            </if>
+            <if test="urls != null">
+                urls=#{urls},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateFunction" parameterType="map">
+        update function
+        <set>
+                id=#{enti.id},
+                function_name=#{enti.functionName},
+                upper_level_id=#{enti.upperLevelId},
+                current_level=#{enti.currentLevel},
+                icon=#{enti.icon},
+                group_id=#{enti.groupId},
+                order_id=#{enti.orderId},
+                urls=#{enti.urls},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyFunction" parameterType="map">
+        update function
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.functionName != null">
+                function_name=#{enti.functionName},
+            </if>
+            <if test="enti.upperLevelId != null">
+                upper_level_id=#{enti.upperLevelId},
+            </if>
+            <if test="enti.currentLevel != null">
+                current_level=#{enti.currentLevel},
+            </if>
+            <if test="enti.icon != null">
+                icon=#{enti.icon},
+            </if>
+            <if test="enti.groupId != null">
+                group_id=#{enti.groupId},
+            </if>
+            <if test="enti.orderId != null">
+                order_id=#{enti.orderId},
+            </if>
+            <if test="enti.urls != null">
+                urls=#{enti.urls},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.OrganizationDao">
+    <resultMap id="result_Organization_Map" type="com.changjiang.entity.Organization">
+        <id column="Organization0" property="id" />
+        <result column="Organization1" property="name" />
+        <result column="Organization2" property="upperLevelId" />
+        <result column="Organization3" property="currentLevel" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="organization_Column">
+        organization.id as Organization0
+        ,organization.name as Organization1
+        ,organization.upper_level_id as Organization2
+        ,organization.current_level as Organization3
+    </sql>
+
+    <select id="getOrganizationRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from organization
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectOrganization" parameterType="com.changjiang.common.Assist"  resultMap="result_Organization_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="organization_Column" /> 
+            </otherwise>
+        </choose>
+        from organization
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectOrganizationById" parameterType="java.lang.Integer" resultMap="result_Organization_Map">
+        select 
+            <include refid="organization_Column" /> 
+        from organization
+        where organization.id = #{id}
+    </select> 
+
+<!--  通过currentLevel查询它下的所有组织 -->
+    <select id="selectOrganizationByCurrentLevelId" parameterType="java.lang.Integer" resultMap="result_Organization_Map">
+        select
+        <include refid="organization_Column" />
+        from organization
+        where organization.upper_level_id = #{upper_level_id}
+    </select>
+
+
+
+
+    <insert id="insertOrganization" parameterType="com.changjiang.entity.Organization">
+        insert into organization(id,name,upper_level_id,current_level) 
+        values(#{id},#{name},#{upperLevelId},#{currentLevel})
+    </insert>
+
+    <insert id="insertNonEmptyOrganization" parameterType="com.changjiang.entity.Organization">
+        insert into organization
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="upperLevelId != null">upper_level_id,</if>
+            <if test="currentLevel != null">current_level,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="upperLevelId != null"> #{upperLevelId},</if>
+            <if test="currentLevel != null"> #{currentLevel},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteOrganizationById" parameterType="java.lang.Integer">
+        delete from organization
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteOrganization" parameterType="com.changjiang.common.Assist">
+        delete from organization
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateOrganizationById" parameterType="com.changjiang.entity.Organization">
+        update organization set
+            name=#{name}
+            ,upper_level_id=#{upperLevelId}
+            ,current_level=#{currentLevel}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyOrganizationById" parameterType="com.changjiang.entity.Organization">
+        update organization
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="upperLevelId != null">
+                upper_level_id=#{upperLevelId},
+            </if>
+            <if test="currentLevel != null">
+                current_level=#{currentLevel},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateOrganization" parameterType="map">
+        update organization
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                upper_level_id=#{enti.upperLevelId},
+                current_level=#{enti.currentLevel},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyOrganization" parameterType="map">
+        update organization
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.upperLevelId != null">
+                upper_level_id=#{enti.upperLevelId},
+            </if>
+            <if test="enti.currentLevel != null">
+                current_level=#{enti.currentLevel},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

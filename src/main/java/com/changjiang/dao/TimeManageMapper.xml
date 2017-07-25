@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.TimeManageDao">
+    <resultMap id="result_TimeManage_Map" type="com.changjiang.entity.TimeManage">
+        <id column="TimeManage0" property="id" />
+        <result column="TimeManage1" property="startTime" />
+        <result column="TimeManage2" property="endTime" />
+        <result column="TimeManage3" property="name" />
+        <result column="TimeManage4" property="storeId" />
+        <result column="TimeManage5" property="state" />
+        <result column="TimeManage6" property="dbDesc" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="time_manage_Column">
+        time_manage.id as TimeManage0
+        ,time_manage.start_time as TimeManage1
+        ,time_manage.end_time as TimeManage2
+        ,time_manage.name as TimeManage3
+        ,time_manage.store_id as TimeManage4
+        ,time_manage.state as TimeManage5
+        ,time_manage.db_desc as TimeManage6
+    </sql>
+
+    <select id="getTimeManageRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from time_manage
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectTimeManage" parameterType="com.changjiang.common.Assist"  resultMap="result_TimeManage_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="time_manage_Column" /> 
+            </otherwise>
+        </choose>
+        from time_manage
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectTimeManageById" parameterType="java.lang.Integer" resultMap="result_TimeManage_Map">
+        select 
+            <include refid="time_manage_Column" /> 
+        from time_manage
+        where time_manage.id = #{id}
+    </select> 
+
+
+    <insert id="insertTimeManage" parameterType="com.changjiang.entity.TimeManage">
+        insert into time_manage(id,start_time,end_time,name,store_id,state,db_desc) 
+        values(#{id},#{startTime},#{endTime},#{name},#{storeId},#{state},#{dbDesc})
+    </insert>
+
+    <insert id="insertNonEmptyTimeManage" parameterType="com.changjiang.entity.TimeManage">
+        insert into time_manage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="name != null">name,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="state != null">state,</if>
+            <if test="dbDesc != null">db_desc,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="startTime != null"> #{startTime},</if>
+            <if test="endTime != null"> #{endTime},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="storeId != null"> #{storeId},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteTimeManageById" parameterType="java.lang.Integer">
+        delete from time_manage
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteTimeManage" parameterType="com.changjiang.common.Assist">
+        delete from time_manage
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateTimeManageById" parameterType="com.changjiang.entity.TimeManage">
+        update time_manage set
+            start_time=#{startTime}
+            ,end_time=#{endTime}
+            ,name=#{name}
+            ,store_id=#{storeId}
+            ,state=#{state}
+            ,db_desc=#{dbDesc}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyTimeManageById" parameterType="com.changjiang.entity.TimeManage">
+        update time_manage
+        <set>
+            <if test="startTime != null">
+                start_time=#{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time=#{endTime},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateTimeManage" parameterType="map">
+        update time_manage
+        <set>
+                id=#{enti.id},
+                start_time=#{enti.startTime},
+                end_time=#{enti.endTime},
+                name=#{enti.name},
+                store_id=#{enti.storeId},
+                state=#{enti.state},
+                db_desc=#{enti.dbDesc},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyTimeManage" parameterType="map">
+        update time_manage
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.startTime != null">
+                start_time=#{enti.startTime},
+            </if>
+            <if test="enti.endTime != null">
+                end_time=#{enti.endTime},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

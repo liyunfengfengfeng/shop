@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.PrivilegeDao">
+    <resultMap id="result_Privilege_Map" type="com.changjiang.entity.Privilege">
+        <id column="Privilege0" property="id" />
+        <result column="Privilege1" property="number" />
+        <result column="Privilege2" property="dbDesc" />
+        <result column="Privilege3" property="startTime" />
+        <result column="Privilege4" property="endTime" />
+        <result column="Privilege5" property="storeName" />
+        <result column="Privilege6" property="priority" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="privilege_Column">
+        privilege.id as Privilege0
+        ,privilege.number as Privilege1
+        ,privilege.db_desc as Privilege2
+        ,privilege.start_time as Privilege3
+        ,privilege.end_time as Privilege4
+        ,privilege.store_name as Privilege5
+        ,privilege.priority as Privilege6
+    </sql>
+
+    <select id="getPrivilegeRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from privilege
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectPrivilege" parameterType="com.changjiang.common.Assist"  resultMap="result_Privilege_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="privilege_Column" /> 
+            </otherwise>
+        </choose>
+        from privilege
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectPrivilegeById" parameterType="java.lang.Integer" resultMap="result_Privilege_Map">
+        select 
+            <include refid="privilege_Column" /> 
+        from privilege
+        where privilege.id = #{id}
+    </select> 
+
+
+    <insert id="insertPrivilege" parameterType="com.changjiang.entity.Privilege">
+        insert into privilege(id,number,db_desc,start_time,end_time,store_name,priority) 
+        values(#{id},#{number},#{dbDesc},#{startTime},#{endTime},#{storeName},#{priority})
+    </insert>
+
+    <insert id="insertNonEmptyPrivilege" parameterType="com.changjiang.entity.Privilege">
+        insert into privilege
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="storeName != null">store_name,</if>
+            <if test="priority != null">priority,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="startTime != null"> #{startTime},</if>
+            <if test="endTime != null"> #{endTime},</if>
+            <if test="storeName != null"> #{storeName},</if>
+            <if test="priority != null"> #{priority},</if>
+        </trim>
+    </insert>
+
+    <delete id="deletePrivilegeById" parameterType="java.lang.Integer">
+        delete from privilege
+        where id = #{id}
+    </delete>
+
+    <delete id="deletePrivilege" parameterType="com.changjiang.common.Assist">
+        delete from privilege
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updatePrivilegeById" parameterType="com.changjiang.entity.Privilege">
+        update privilege set
+            number=#{number}
+            ,db_desc=#{dbDesc}
+            ,start_time=#{startTime}
+            ,end_time=#{endTime}
+            ,store_name=#{storeName}
+            ,priority=#{priority}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyPrivilegeById" parameterType="com.changjiang.entity.Privilege">
+        update privilege
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="startTime != null">
+                start_time=#{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time=#{endTime},
+            </if>
+            <if test="storeName != null">
+                store_name=#{storeName},
+            </if>
+            <if test="priority != null">
+                priority=#{priority},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updatePrivilege" parameterType="map">
+        update privilege
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                db_desc=#{enti.dbDesc},
+                start_time=#{enti.startTime},
+                end_time=#{enti.endTime},
+                store_name=#{enti.storeName},
+                priority=#{enti.priority},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyPrivilege" parameterType="map">
+        update privilege
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.startTime != null">
+                start_time=#{enti.startTime},
+            </if>
+            <if test="enti.endTime != null">
+                end_time=#{enti.endTime},
+            </if>
+            <if test="enti.storeName != null">
+                store_name=#{enti.storeName},
+            </if>
+            <if test="enti.priority != null">
+                priority=#{enti.priority},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

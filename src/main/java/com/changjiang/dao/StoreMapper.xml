@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.StoreDao">
+    <resultMap id="result_Store_Map" type="com.changjiang.entity.Store">
+        <id column="Store0" property="id" />
+        <result column="Store1" property="name" />
+        <result column="Store2" property="storeTypeId" />
+        <result column="Store3" property="address" />
+        <result column="Store4" property="phone" />
+        <result column="Store5" property="legalName" />
+        <result column="Store6" property="legalNamePhone" />
+        <result column="Store7" property="state" />
+        <result column="Store8" property="dbDesc" />
+        <result column="Store9" property="organizationId" />
+        <result column="Store10" property="number" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="store_Column">
+        store.id as Store0
+        ,store.name as Store1
+        ,store.store_type_id as Store2
+        ,store.address as Store3
+        ,store.phone as Store4
+        ,store.legal_name as Store5
+        ,store.legal_name_phone as Store6
+        ,store.state as Store7
+        ,store.db_desc as Store8
+        ,store.organization_id as Store9
+        ,store.number as Store10
+    </sql>
+
+    <select id="getStoreRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from store
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectStore" parameterType="com.changjiang.common.Assist"  resultMap="result_Store_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="store_Column" /> 
+            </otherwise>
+        </choose>
+        from store
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectStoreById" parameterType="java.lang.Integer" resultMap="result_Store_Map">
+        select 
+            <include refid="store_Column" /> 
+        from store
+        where store.id = #{id}
+    </select> 
+    <!-- 通过店面id查询店面产品 -->
+    <select id="queryStoreProducteByStoreId" parameterType="java.lang.Integer" resultMap="result_Store_Map2">
+        select 
+            *
+        from store
+        where store.id = #{id}
+    </select> 
+	<resultMap id="result_Store_Map2" type="com.changjiang.entity.Store">
+        <id column="Store0" property="id" />
+        <result column="Store1" property="name" />
+        <result column="Store2" property="storeTypeId" />
+        <result column="Store3" property="address" />
+        <result column="Store4" property="phone" />
+        <result column="Store5" property="legalName" />
+        <result column="Store6" property="legalNamePhone" />
+        <result column="Store7" property="state" />
+        <result column="Store8" property="dbDesc" />
+        <result column="Store9" property="organizationId" />
+        <result column="Store10" property="number" />
+        <collection property="storeProducte" ofType="com.changjiang.entity.StoreProducte" column="id" select="getStoreProducts">
+        </collection>
+    </resultMap>
+	<select id="getStoreProducts" parameterType="int" resultType="com.changjiang.entity.StoreProducte">
+        SELECT * FROM store_producte WHERE store_id=#{id}
+     </select>
+
+
+
+
+    <insert id="insertStore" parameterType="com.changjiang.entity.Store">
+        insert into store(id,name,store_type_id,address,phone,legal_name,legal_name_phone,state,db_desc,organization_id,number) 
+        values(#{id},#{name},#{storeTypeId},#{address},#{phone},#{legalName},#{legalNamePhone},#{state},#{dbDesc},#{organizationId},#{number})
+    </insert>
+
+    <insert id="insertNonEmptyStore" parameterType="com.changjiang.entity.Store">
+        insert into store
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="storeTypeId != null">store_type_id,</if>
+            <if test="address != null">address,</if>
+            <if test="phone != null">phone,</if>
+            <if test="legalName != null">legal_name,</if>
+            <if test="legalNamePhone != null">legal_name_phone,</if>
+            <if test="state != null">state,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="organizationId != null">organization_id,</if>
+            <if test="number != null">number,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="storeTypeId != null"> #{storeTypeId},</if>
+            <if test="address != null"> #{address},</if>
+            <if test="phone != null"> #{phone},</if>
+            <if test="legalName != null"> #{legalName},</if>
+            <if test="legalNamePhone != null"> #{legalNamePhone},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="organizationId != null"> #{organizationId},</if>
+            <if test="number != null"> #{number},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteStoreById" parameterType="java.lang.Integer">
+        delete from store
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteStore" parameterType="com.changjiang.common.Assist">
+        delete from store
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateStoreById" parameterType="com.changjiang.entity.Store">
+        update store set
+            name=#{name}
+            ,store_type_id=#{storeTypeId}
+            ,address=#{address}
+            ,phone=#{phone}
+            ,legal_name=#{legalName}
+            ,legal_name_phone=#{legalNamePhone}
+            ,state=#{state}
+            ,db_desc=#{dbDesc}
+            ,organization_id=#{organizationId}
+            ,number=#{number}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyStoreById" parameterType="com.changjiang.entity.Store">
+        update store
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="storeTypeId != null">
+                store_type_id=#{storeTypeId},
+            </if>
+            <if test="address != null">
+                address=#{address},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="legalName != null">
+                legal_name=#{legalName},
+            </if>
+            <if test="legalNamePhone != null">
+                legal_name_phone=#{legalNamePhone},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="organizationId != null">
+                organization_id=#{organizationId},
+            </if>
+            <if test="number != null">
+                number=#{number},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateStore" parameterType="map">
+        update store
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                store_type_id=#{enti.storeTypeId},
+                address=#{enti.address},
+                phone=#{enti.phone},
+                legal_name=#{enti.legalName},
+                legal_name_phone=#{enti.legalNamePhone},
+                state=#{enti.state},
+                db_desc=#{enti.dbDesc},
+                organization_id=#{enti.organizationId},
+                number=#{enti.number},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyStore" parameterType="map">
+        update store
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.storeTypeId != null">
+                store_type_id=#{enti.storeTypeId},
+            </if>
+            <if test="enti.address != null">
+                address=#{enti.address},
+            </if>
+            <if test="enti.phone != null">
+                phone=#{enti.phone},
+            </if>
+            <if test="enti.legalName != null">
+                legal_name=#{enti.legalName},
+            </if>
+            <if test="enti.legalNamePhone != null">
+                legal_name_phone=#{enti.legalNamePhone},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.organizationId != null">
+                organization_id=#{enti.organizationId},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

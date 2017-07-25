@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.OrderTypeDao">
+    <resultMap id="result_OrderType_Map" type="com.changjiang.entity.OrderType">
+        <id column="OrderType0" property="id" />
+        <result column="OrderType1" property="number" />
+        <result column="OrderType2" property="name" />
+        <result column="OrderType3" property="dbDesc" />
+        <result column="OrderType4" property="storeNumber" />
+        <result column="OrderType5" property="state" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="order_type_Column">
+        order_type.id as OrderType0
+        ,order_type.number as OrderType1
+        ,order_type.name as OrderType2
+        ,order_type.db_desc as OrderType3
+        ,order_type.store_number as OrderType4
+        ,order_type.state as OrderType5
+    </sql>
+
+    <select id="getOrderTypeRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from order_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectOrderType" parameterType="com.changjiang.common.Assist"  resultMap="result_OrderType_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="order_type_Column" /> 
+            </otherwise>
+        </choose>
+        from order_type
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectOrderTypeById" parameterType="java.lang.Integer" resultMap="result_OrderType_Map">
+        select 
+            <include refid="order_type_Column" /> 
+        from order_type
+        where order_type.id = #{id}
+    </select> 
+
+	<!-- 根据订单类型order_type查询订单信息db_order -->
+	<select id="queryOrderInfoByOrderTypeId" parameterType="java.lang.Integer" resultMap="result_OrderType_Map2">
+        select 
+            *
+        from order_type
+        where order_type.id = #{id}
+    </select> 
+	<resultMap id="result_OrderType_Map2" type="com.changjiang.entity.OrderType">
+        <id column="id" property="id" />
+        <result column="number" property="number" />
+        <result column="name" property="name" />
+        <result column="db_desc" property="dbDesc" />
+        <result column="store_number" property="storeNumber" />
+        <result column="state" property="state" />
+        <collection property="orders" ofType="com.changjiang.entity.Order" column="id" select="getOrders">
+        </collection>
+    </resultMap>
+	<select id="getOrders" parameterType="int" resultType="com.changjiang.entity.Order">
+        SELECT * FROM db_order WHERE type_id=#{id}
+     </select>
+
+
+
+    <insert id="insertOrderType" parameterType="com.changjiang.entity.OrderType">
+        insert into order_type(id,number,name,db_desc,store_number,state) 
+        values(#{id},#{number},#{name},#{dbDesc},#{storeNumber},#{state})
+    </insert>
+
+    <insert id="insertNonEmptyOrderType" parameterType="com.changjiang.entity.OrderType">
+        insert into order_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="storeNumber != null">store_number,</if>
+            <if test="state != null">state,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="storeNumber != null"> #{storeNumber},</if>
+            <if test="state != null"> #{state},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteOrderTypeById" parameterType="java.lang.Integer">
+        delete from order_type
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderType" parameterType="com.changjiang.common.Assist">
+        delete from order_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateOrderTypeById" parameterType="com.changjiang.entity.OrderType">
+        update order_type set
+            number=#{number}
+            ,name=#{name}
+            ,db_desc=#{dbDesc}
+            ,store_number=#{storeNumber}
+            ,state=#{state}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyOrderTypeById" parameterType="com.changjiang.entity.OrderType">
+        update order_type
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="storeNumber != null">
+                store_number=#{storeNumber},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateOrderType" parameterType="map">
+        update order_type
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                store_number=#{enti.storeNumber},
+                state=#{enti.state},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyOrderType" parameterType="map">
+        update order_type
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.storeNumber != null">
+                store_number=#{enti.storeNumber},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

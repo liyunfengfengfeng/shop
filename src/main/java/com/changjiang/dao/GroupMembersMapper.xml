@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.GroupMembersDao">
+    <resultMap id="result_GroupMembers_Map" type="com.changjiang.entity.GroupMembers">
+        <id column="GroupMembers0" property="id" />
+        <result column="GroupMembers1" property="username" />
+        <result column="GroupMembers2" property="userId" />
+        <result column="GroupMembers3" property="groupId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="group_members_Column">
+        group_members.id as GroupMembers0
+        ,group_members.username as GroupMembers1
+        ,group_members.user_id as GroupMembers2
+        ,group_members.group_id as GroupMembers3
+    </sql>
+
+    <select id="getGroupMembersRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from group_members
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectGroupMembers" parameterType="com.changjiang.common.Assist"  resultMap="result_GroupMembers_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="group_members_Column" /> 
+            </otherwise>
+        </choose>
+        from group_members
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectGroupMembersById" parameterType="java.lang.Integer" resultMap="result_GroupMembers_Map">
+        select 
+            <include refid="group_members_Column" /> 
+        from group_members
+        where group_members.id = #{id}
+    </select> 
+
+
+    <insert id="insertGroupMembers" parameterType="com.changjiang.entity.GroupMembers">
+        insert into group_members(id,username,user_id,group_id) 
+        values(#{id},#{username},#{userId},#{groupId})
+    </insert>
+
+    <insert id="insertNonEmptyGroupMembers" parameterType="com.changjiang.entity.GroupMembers">
+        insert into group_members
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="username != null">username,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="groupId != null">group_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="username != null"> #{username},</if>
+            <if test="userId != null"> #{userId},</if>
+            <if test="groupId != null"> #{groupId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteGroupMembersById" parameterType="java.lang.Integer">
+        delete from group_members
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteGroupMembers" parameterType="com.changjiang.common.Assist">
+        delete from group_members
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateGroupMembersById" parameterType="com.changjiang.entity.GroupMembers">
+        update group_members set
+            username=#{username}
+            ,user_id=#{userId}
+            ,group_id=#{groupId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyGroupMembersById" parameterType="com.changjiang.entity.GroupMembers">
+        update group_members
+        <set>
+            <if test="username != null">
+                username=#{username},
+            </if>
+            <if test="userId != null">
+                user_id=#{userId},
+            </if>
+            <if test="groupId != null">
+                group_id=#{groupId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateGroupMembers" parameterType="map">
+        update group_members
+        <set>
+                id=#{enti.id},
+                username=#{enti.username},
+                user_id=#{enti.userId},
+                group_id=#{enti.groupId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyGroupMembers" parameterType="map">
+        update group_members
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.username != null">
+                username=#{enti.username},
+            </if>
+            <if test="enti.userId != null">
+                user_id=#{enti.userId},
+            </if>
+            <if test="enti.groupId != null">
+                group_id=#{enti.groupId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

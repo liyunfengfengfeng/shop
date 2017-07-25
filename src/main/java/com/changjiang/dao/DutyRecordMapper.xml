@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.DutyRecordDao">
+    <resultMap id="result_DutyRecord_Map" type="com.changjiang.entity.DutyRecord">
+        <id column="DutyRecord0" property="id" />
+        <result column="DutyRecord1" property="name" />
+        <result column="DutyRecord2" property="dbDesc" />
+        <result column="DutyRecord3" property="gradeId" />
+        <result column="DutyRecord4" property="state" />
+        <result column="DutyRecord5" property="officialUserinformation" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="duty_record_Column">
+        duty_record.id as DutyRecord0
+        ,duty_record.name as DutyRecord1
+        ,duty_record.db_desc as DutyRecord2
+        ,duty_record.grade_id as DutyRecord3
+        ,duty_record.state as DutyRecord4
+        ,duty_record.official_userInformation as DutyRecord5
+    </sql>
+
+    <select id="getDutyRecordRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from duty_record
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectDutyRecord" parameterType="com.changjiang.common.Assist"  resultMap="result_DutyRecord_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="duty_record_Column" /> 
+            </otherwise>
+        </choose>
+        from duty_record
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectDutyRecordById" parameterType="java.lang.Integer" resultMap="result_DutyRecord_Map">
+        select 
+            <include refid="duty_record_Column" /> 
+        from duty_record
+        where duty_record.id = #{id}
+    </select> 
+
+
+    <insert id="insertDutyRecord" parameterType="com.changjiang.entity.DutyRecord">
+        insert into duty_record(id,name,db_desc,grade_id,state,official_userInformation) 
+        values(#{id},#{name},#{dbDesc},#{gradeId},#{state},#{officialUserinformation})
+    </insert>
+
+    <insert id="insertNonEmptyDutyRecord" parameterType="com.changjiang.entity.DutyRecord">
+        insert into duty_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="gradeId != null">grade_id,</if>
+            <if test="state != null">state,</if>
+            <if test="officialUserinformation != null">official_userInformation,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="gradeId != null"> #{gradeId},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="officialUserinformation != null"> #{officialUserinformation},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteDutyRecordById" parameterType="java.lang.Integer">
+        delete from duty_record
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDutyRecord" parameterType="com.changjiang.common.Assist">
+        delete from duty_record
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateDutyRecordById" parameterType="com.changjiang.entity.DutyRecord">
+        update duty_record set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,grade_id=#{gradeId}
+            ,state=#{state}
+            ,official_userInformation=#{officialUserinformation}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyDutyRecordById" parameterType="com.changjiang.entity.DutyRecord">
+        update duty_record
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="gradeId != null">
+                grade_id=#{gradeId},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="officialUserinformation != null">
+                official_userInformation=#{officialUserinformation},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateDutyRecord" parameterType="map">
+        update duty_record
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                grade_id=#{enti.gradeId},
+                state=#{enti.state},
+                official_userInformation=#{enti.officialUserinformation},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyDutyRecord" parameterType="map">
+        update duty_record
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.gradeId != null">
+                grade_id=#{enti.gradeId},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.officialUserinformation != null">
+                official_userInformation=#{enti.officialUserinformation},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

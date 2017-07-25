@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.CombinationProductsRecordDao">
+    <resultMap id="result_CombinationProductsRecord_Map" type="com.changjiang.entity.CombinationProductsRecord">
+        <id column="CombinationProductsRecord0" property="id" />
+        <result column="CombinationProductsRecord1" property="combinationProductsId" />
+        <result column="CombinationProductsRecord2" property="storeProducteId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="combination_products_record_Column">
+        combination_products_record.id as CombinationProductsRecord0
+        ,combination_products_record.combination_products_id as CombinationProductsRecord1
+        ,combination_products_record.store_producte_id as CombinationProductsRecord2
+    </sql>
+
+    <select id="getCombinationProductsRecordRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from combination_products_record
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectCombinationProductsRecord" parameterType="com.changjiang.common.Assist"  resultMap="result_CombinationProductsRecord_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="combination_products_record_Column" /> 
+            </otherwise>
+        </choose>
+        from combination_products_record
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectCombinationProductsRecordById" parameterType="java.lang.Integer" resultMap="result_CombinationProductsRecord_Map">
+        select 
+            <include refid="combination_products_record_Column" /> 
+        from combination_products_record
+        where combination_products_record.id = #{id}
+    </select> 
+
+
+    <insert id="insertCombinationProductsRecord" parameterType="com.changjiang.entity.CombinationProductsRecord">
+        insert into combination_products_record(id,combination_products_id,store_producte_id) 
+        values(#{id},#{combinationProductsId},#{storeProducteId})
+    </insert>
+
+    <insert id="insertNonEmptyCombinationProductsRecord" parameterType="com.changjiang.entity.CombinationProductsRecord">
+        insert into combination_products_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="combinationProductsId != null">combination_products_id,</if>
+            <if test="storeProducteId != null">store_producte_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="combinationProductsId != null"> #{combinationProductsId},</if>
+            <if test="storeProducteId != null"> #{storeProducteId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCombinationProductsRecordById" parameterType="java.lang.Integer">
+        delete from combination_products_record
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteCombinationProductsRecord" parameterType="com.changjiang.common.Assist">
+        delete from combination_products_record
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateCombinationProductsRecordById" parameterType="com.changjiang.entity.CombinationProductsRecord">
+        update combination_products_record set
+            combination_products_id=#{combinationProductsId}
+            ,store_producte_id=#{storeProducteId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyCombinationProductsRecordById" parameterType="com.changjiang.entity.CombinationProductsRecord">
+        update combination_products_record
+        <set>
+            <if test="combinationProductsId != null">
+                combination_products_id=#{combinationProductsId},
+            </if>
+            <if test="storeProducteId != null">
+                store_producte_id=#{storeProducteId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateCombinationProductsRecord" parameterType="map">
+        update combination_products_record
+        <set>
+                id=#{enti.id},
+                combination_products_id=#{enti.combinationProductsId},
+                store_producte_id=#{enti.storeProducteId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyCombinationProductsRecord" parameterType="map">
+        update combination_products_record
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.combinationProductsId != null">
+                combination_products_id=#{enti.combinationProductsId},
+            </if>
+            <if test="enti.storeProducteId != null">
+                store_producte_id=#{enti.storeProducteId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

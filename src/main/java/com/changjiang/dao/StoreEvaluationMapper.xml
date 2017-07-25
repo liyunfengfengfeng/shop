@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.StoreEvaluationDao">
+    <resultMap id="result_StoreEvaluation_Map" type="com.changjiang.entity.StoreEvaluation">
+        <id column="StoreEvaluation0" property="id" />
+        <result column="StoreEvaluation1" property="number" />
+        <result column="StoreEvaluation2" property="evaluationRank" />
+        <result column="StoreEvaluation3" property="evaluationContent" />
+        <result column="StoreEvaluation4" property="evaluationTime" />
+        <result column="StoreEvaluation5" property="evaluationPeople" />
+        <result column="StoreEvaluation6" property="evaluationPeopleContactWay" />
+        <result column="StoreEvaluation7" property="storeNumber" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="store_evaluation_Column">
+        store_evaluation.id as StoreEvaluation0
+        ,store_evaluation.number as StoreEvaluation1
+        ,store_evaluation.evaluation_rank as StoreEvaluation2
+        ,store_evaluation.evaluation_content as StoreEvaluation3
+        ,store_evaluation.evaluation_time as StoreEvaluation4
+        ,store_evaluation.evaluation_people as StoreEvaluation5
+        ,store_evaluation.evaluation_people_contact_way as StoreEvaluation6
+        ,store_evaluation.store_number as StoreEvaluation7
+    </sql>
+
+    <select id="getStoreEvaluationRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from store_evaluation
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectStoreEvaluation" parameterType="com.changjiang.common.Assist"  resultMap="result_StoreEvaluation_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="store_evaluation_Column" /> 
+            </otherwise>
+        </choose>
+        from store_evaluation
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectStoreEvaluationById" parameterType="java.lang.Integer" resultMap="result_StoreEvaluation_Map">
+        select 
+            <include refid="store_evaluation_Column" /> 
+        from store_evaluation
+        where store_evaluation.id = #{id}
+    </select> 
+
+
+    <insert id="insertStoreEvaluation" parameterType="com.changjiang.entity.StoreEvaluation">
+        insert into store_evaluation(id,number,evaluation_rank,evaluation_content,evaluation_time,evaluation_people,evaluation_people_contact_way,store_number) 
+        values(#{id},#{number},#{evaluationRank},#{evaluationContent},#{evaluationTime},#{evaluationPeople},#{evaluationPeopleContactWay},#{storeNumber})
+    </insert>
+
+    <insert id="insertNonEmptyStoreEvaluation" parameterType="com.changjiang.entity.StoreEvaluation">
+        insert into store_evaluation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="evaluationRank != null">evaluation_rank,</if>
+            <if test="evaluationContent != null">evaluation_content,</if>
+            <if test="evaluationTime != null">evaluation_time,</if>
+            <if test="evaluationPeople != null">evaluation_people,</if>
+            <if test="evaluationPeopleContactWay != null">evaluation_people_contact_way,</if>
+            <if test="storeNumber != null">store_number,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="evaluationRank != null"> #{evaluationRank},</if>
+            <if test="evaluationContent != null"> #{evaluationContent},</if>
+            <if test="evaluationTime != null"> #{evaluationTime},</if>
+            <if test="evaluationPeople != null"> #{evaluationPeople},</if>
+            <if test="evaluationPeopleContactWay != null"> #{evaluationPeopleContactWay},</if>
+            <if test="storeNumber != null"> #{storeNumber},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteStoreEvaluationById" parameterType="java.lang.Integer">
+        delete from store_evaluation
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteStoreEvaluation" parameterType="com.changjiang.common.Assist">
+        delete from store_evaluation
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateStoreEvaluationById" parameterType="com.changjiang.entity.StoreEvaluation">
+        update store_evaluation set
+            number=#{number}
+            ,evaluation_rank=#{evaluationRank}
+            ,evaluation_content=#{evaluationContent}
+            ,evaluation_time=#{evaluationTime}
+            ,evaluation_people=#{evaluationPeople}
+            ,evaluation_people_contact_way=#{evaluationPeopleContactWay}
+            ,store_number=#{storeNumber}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyStoreEvaluationById" parameterType="com.changjiang.entity.StoreEvaluation">
+        update store_evaluation
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="evaluationRank != null">
+                evaluation_rank=#{evaluationRank},
+            </if>
+            <if test="evaluationContent != null">
+                evaluation_content=#{evaluationContent},
+            </if>
+            <if test="evaluationTime != null">
+                evaluation_time=#{evaluationTime},
+            </if>
+            <if test="evaluationPeople != null">
+                evaluation_people=#{evaluationPeople},
+            </if>
+            <if test="evaluationPeopleContactWay != null">
+                evaluation_people_contact_way=#{evaluationPeopleContactWay},
+            </if>
+            <if test="storeNumber != null">
+                store_number=#{storeNumber},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateStoreEvaluation" parameterType="map">
+        update store_evaluation
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                evaluation_rank=#{enti.evaluationRank},
+                evaluation_content=#{enti.evaluationContent},
+                evaluation_time=#{enti.evaluationTime},
+                evaluation_people=#{enti.evaluationPeople},
+                evaluation_people_contact_way=#{enti.evaluationPeopleContactWay},
+                store_number=#{enti.storeNumber},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyStoreEvaluation" parameterType="map">
+        update store_evaluation
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.evaluationRank != null">
+                evaluation_rank=#{enti.evaluationRank},
+            </if>
+            <if test="enti.evaluationContent != null">
+                evaluation_content=#{enti.evaluationContent},
+            </if>
+            <if test="enti.evaluationTime != null">
+                evaluation_time=#{enti.evaluationTime},
+            </if>
+            <if test="enti.evaluationPeople != null">
+                evaluation_people=#{enti.evaluationPeople},
+            </if>
+            <if test="enti.evaluationPeopleContactWay != null">
+                evaluation_people_contact_way=#{enti.evaluationPeopleContactWay},
+            </if>
+            <if test="enti.storeNumber != null">
+                store_number=#{enti.storeNumber},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

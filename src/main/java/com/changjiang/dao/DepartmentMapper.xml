@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.DepartmentDao">
+    <resultMap id="result_Department_Map" type="com.changjiang.entity.Department">
+        <id column="Department0" property="id" />
+        <result column="Department1" property="number" />
+        <result column="Department2" property="name" />
+        <result column="Department3" property="dbDesc" />
+        <result column="Department4" property="storeId" />
+        <result column="Department5" property="departmentGrade" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="department_Column">
+        department.id as Department0
+        ,department.number as Department1
+        ,department.name as Department2
+        ,department.db_desc as Department3
+        ,department.store_id as Department4
+        ,department.department_grade as Department5
+    </sql>
+
+    <select id="getDepartmentRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from department
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectDepartment" parameterType="com.changjiang.common.Assist"  resultMap="result_Department_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="department_Column" /> 
+            </otherwise>
+        </choose>
+        from department
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectDepartmentById" parameterType="java.lang.Integer" resultMap="result_Department_Map">
+        select 
+            <include refid="department_Column" /> 
+        from department
+        where department.id = #{id}
+    </select> 
+	<!-- 通过id查询department与其对应的workstation岗位 -->
+	<select id="findDepartmentAndWorkStation" parameterType="int" resultMap="result_Department_Map2">
+        select * from department where id=#{id}
+     </select>
+	<resultMap id="result_Department_Map2" type="com.changjiang.entity.Department">
+        <id column="id" property="id" />
+        <result column="number" property="number" />
+        <result column="name" property="name" />
+        <result column="db_desc" property="dbDesc" />
+        <result column="store_id" property="storeId" />
+        <result column="department_grade" property="departmentGrade" />
+        <collection property="workStations" ofType="com.changjiang.entity.WorkStation" column="id" select="getWorkStations">
+        </collection>
+    </resultMap>
+<select id="getWorkStations" parameterType="int" resultType="com.changjiang.entity.WorkStation">
+        SELECT * FROM work_station WHERE department_id=#{id}
+     </select>
+
+
+
+    <insert id="insertDepartment" parameterType="com.changjiang.entity.Department">
+        insert into department(id,number,name,db_desc,store_id,department_grade) 
+        values(#{id},#{number},#{name},#{dbDesc},#{storeId},#{departmentGrade})
+    </insert>
+
+    <insert id="insertNonEmptyDepartment" parameterType="com.changjiang.entity.Department">
+        insert into department
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="departmentGrade != null">department_grade,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="storeId != null"> #{storeId},</if>
+            <if test="departmentGrade != null"> #{departmentGrade},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteDepartmentById" parameterType="java.lang.Integer">
+        delete from department
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDepartment" parameterType="com.changjiang.common.Assist">
+        delete from department
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateDepartmentById" parameterType="com.changjiang.entity.Department">
+        update department set
+            number=#{number}
+            ,name=#{name}
+            ,db_desc=#{dbDesc}
+            ,store_id=#{storeId}
+            ,department_grade=#{departmentGrade}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyDepartmentById" parameterType="com.changjiang.entity.Department">
+        update department
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+            <if test="departmentGrade != null">
+                department_grade=#{departmentGrade},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateDepartment" parameterType="map">
+        update department
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                store_id=#{enti.storeId},
+                department_grade=#{enti.departmentGrade},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyDepartment" parameterType="map">
+        update department
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+            <if test="enti.departmentGrade != null">
+                department_grade=#{enti.departmentGrade},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

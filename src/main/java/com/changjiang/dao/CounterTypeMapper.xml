@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.CounterTypeDao">
+    <resultMap id="result_CounterType_Map" type="com.changjiang.entity.CounterType">
+        <id column="CounterType0" property="id" />
+        <result column="CounterType1" property="name" />
+        <result column="CounterType2" property="dbDesc" />
+        <result column="CounterType3" property="state" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="counter_type_Column">
+        counter_type.id as CounterType0
+        ,counter_type.name as CounterType1
+        ,counter_type.db_desc as CounterType2
+        ,counter_type.state as CounterType3
+    </sql>
+
+    <select id="getCounterTypeRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from counter_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectCounterType" parameterType="com.changjiang.common.Assist"  resultMap="result_CounterType_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="counter_type_Column" /> 
+            </otherwise>
+        </choose>
+        from counter_type
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectCounterTypeById" parameterType="java.lang.Integer" resultMap="result_CounterType_Map">
+        select 
+            <include refid="counter_type_Column" /> 
+        from counter_type
+        where counter_type.id = #{id}
+    </select> 
+	<!-- 通过id查询柜台类别与其对应的柜台 -->
+	<select id="findCounterTypeAndCounter" parameterType="int" resultMap="result_CounterType_Map2">
+        select * from counter_type where id=#{id}
+     </select>
+	<resultMap id="result_CounterType_Map2" type="com.changjiang.entity.CounterType">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="db_desc" property="dbDesc" />
+        <result column="state" property="state" />
+        <collection property="counters" ofType="com.changjiang.entity.Counter" column="id" select="getCounters"></collection>
+    </resultMap>
+	<select id="getCounters" parameterType="int" resultType="com.changjiang.entity.Counter">
+        SELECT * FROM counter WHERE type=#{id}
+     </select>
+
+
+
+
+
+    <insert id="insertCounterType" parameterType="com.changjiang.entity.CounterType">
+        insert into counter_type(id,name,db_desc,state) 
+        values(#{id},#{name},#{dbDesc},#{state})
+    </insert>
+
+    <insert id="insertNonEmptyCounterType" parameterType="com.changjiang.entity.CounterType">
+        insert into counter_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="state != null">state,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="state != null"> #{state},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCounterTypeById" parameterType="java.lang.Integer">
+        delete from counter_type
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteCounterType" parameterType="com.changjiang.common.Assist">
+        delete from counter_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateCounterTypeById" parameterType="com.changjiang.entity.CounterType">
+        update counter_type set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,state=#{state}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyCounterTypeById" parameterType="com.changjiang.entity.CounterType">
+        update counter_type
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateCounterType" parameterType="map">
+        update counter_type
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                state=#{enti.state},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyCounterType" parameterType="map">
+        update counter_type
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

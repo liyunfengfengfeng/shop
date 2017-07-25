@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.DbOrderDao">
+    <resultMap id="result_DbOrder_Map" type="com.changjiang.entity.DbOrder">
+        <id column="DbOrder0" property="id" />
+        <result column="DbOrder1" property="number" />
+        <result column="DbOrder2" property="typeId" />
+        <result column="DbOrder3" property="orderTime" />
+        <result column="DbOrder4" property="checkoutTime" />
+        <result column="DbOrder5" property="receivables" />
+        <result column="DbOrder6" property="paidinAccount" />
+        <result column="DbOrder7" property="reminderNumber" />
+        <result column="DbOrder8" property="operatorId" />
+        <result column="DbOrder9" property="vipId" />
+        <result column="DbOrder10" property="oneBillForAllId" />
+        <result column="DbOrder11" property="storeNumber" />
+        <result column="DbOrder12" property="timeManageId" />
+        <result column="DbOrder13" property="orderId" />
+        <result column="DbOrder14" property="startCounterTime" />
+        <result column="DbOrder15" property="stopCounterTime" />
+        <result column="DbOrder16" property="oneForAllTime" />
+        <result column="DbOrder17" property="mergeCounterTime" />
+        <result column="DbOrder18" property="mergeCounterSign" />
+        <result column="DbOrder19" property="mergeCounterId" />
+        <result column="DbOrder20" property="state" />
+        <result column="DbOrder21" property="sequence" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="db_order_Column">
+        db_order.id as DbOrder0
+        ,db_order.number as DbOrder1
+        ,db_order.type_id as DbOrder2
+        ,db_order.order_time as DbOrder3
+        ,db_order.checkout_time as DbOrder4
+        ,db_order.receivables as DbOrder5
+        ,db_order.paidin_account as DbOrder6
+        ,db_order.reminder_number as DbOrder7
+        ,db_order.operator_id as DbOrder8
+        ,db_order.vip_id as DbOrder9
+        ,db_order.one_bill_for_all_id as DbOrder10
+        ,db_order.store_number as DbOrder11
+        ,db_order.time_manage_id as DbOrder12
+        ,db_order.order_id as DbOrder13
+        ,db_order.start_counter_time as DbOrder14
+        ,db_order.stop_counter_time as DbOrder15
+        ,db_order.one_for_all_time as DbOrder16
+        ,db_order.merge_counter_time as DbOrder17
+        ,db_order.merge_counter_sign as DbOrder18
+        ,db_order.merge_counter_id as DbOrder19
+        ,db_order.state as DbOrder20
+        ,db_order.sequence as DbOrder21
+    </sql>
+
+    <select id="getDbOrderRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from db_order
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectDbOrder" parameterType="com.changjiang.common.Assist"  resultMap="result_DbOrder_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="db_order_Column" /> 
+            </otherwise>
+        </choose>
+        from db_order
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectDbOrderById" parameterType="java.lang.Integer" resultMap="result_DbOrder_Map">
+        select 
+            <include refid="db_order_Column" /> 
+        from db_order
+        where db_order.id = #{id}
+    </select> 
+
+
+    <insert id="insertDbOrder" parameterType="com.changjiang.entity.DbOrder">
+        insert into db_order(id,number,type_id,order_time,checkout_time,receivables,paidin_account,reminder_number,operator_id,vip_id,one_bill_for_all_id,store_number,time_manage_id,order_id,start_counter_time,stop_counter_time,one_for_all_time,merge_counter_time,merge_counter_sign,merge_counter_id,state,sequence) 
+        values(#{id},#{number},#{typeId},#{orderTime},#{checkoutTime},#{receivables},#{paidinAccount},#{reminderNumber},#{operatorId},#{vipId},#{oneBillForAllId},#{storeNumber},#{timeManageId},#{orderId},#{startCounterTime},#{stopCounterTime},#{oneForAllTime},#{mergeCounterTime},#{mergeCounterSign},#{mergeCounterId},#{state},#{sequence})
+    </insert>
+
+    <insert id="insertNonEmptyDbOrder" parameterType="com.changjiang.entity.DbOrder">
+        insert into db_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="typeId != null">type_id,</if>
+            <if test="orderTime != null">order_time,</if>
+            <if test="checkoutTime != null">checkout_time,</if>
+            <if test="receivables != null">receivables,</if>
+            <if test="paidinAccount != null">paidin_account,</if>
+            <if test="reminderNumber != null">reminder_number,</if>
+            <if test="operatorId != null">operator_id,</if>
+            <if test="vipId != null">vip_id,</if>
+            <if test="oneBillForAllId != null">one_bill_for_all_id,</if>
+            <if test="storeNumber != null">store_number,</if>
+            <if test="timeManageId != null">time_manage_id,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="startCounterTime != null">start_counter_time,</if>
+            <if test="stopCounterTime != null">stop_counter_time,</if>
+            <if test="oneForAllTime != null">one_for_all_time,</if>
+            <if test="mergeCounterTime != null">merge_counter_time,</if>
+            <if test="mergeCounterSign != null">merge_counter_sign,</if>
+            <if test="mergeCounterId != null">merge_counter_id,</if>
+            <if test="state != null">state,</if>
+            <if test="sequence != null">sequence,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="typeId != null"> #{typeId},</if>
+            <if test="orderTime != null"> #{orderTime},</if>
+            <if test="checkoutTime != null"> #{checkoutTime},</if>
+            <if test="receivables != null"> #{receivables},</if>
+            <if test="paidinAccount != null"> #{paidinAccount},</if>
+            <if test="reminderNumber != null"> #{reminderNumber},</if>
+            <if test="operatorId != null"> #{operatorId},</if>
+            <if test="vipId != null"> #{vipId},</if>
+            <if test="oneBillForAllId != null"> #{oneBillForAllId},</if>
+            <if test="storeNumber != null"> #{storeNumber},</if>
+            <if test="timeManageId != null"> #{timeManageId},</if>
+            <if test="orderId != null"> #{orderId},</if>
+            <if test="startCounterTime != null"> #{startCounterTime},</if>
+            <if test="stopCounterTime != null"> #{stopCounterTime},</if>
+            <if test="oneForAllTime != null"> #{oneForAllTime},</if>
+            <if test="mergeCounterTime != null"> #{mergeCounterTime},</if>
+            <if test="mergeCounterSign != null"> #{mergeCounterSign},</if>
+            <if test="mergeCounterId != null"> #{mergeCounterId},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="sequence != null"> #{sequence},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteDbOrderById" parameterType="java.lang.Integer">
+        delete from db_order
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDbOrder" parameterType="com.changjiang.common.Assist">
+        delete from db_order
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateDbOrderById" parameterType="com.changjiang.entity.DbOrder">
+        update db_order set
+            number=#{number}
+            ,type_id=#{typeId}
+            ,order_time=#{orderTime}
+            ,checkout_time=#{checkoutTime}
+            ,receivables=#{receivables}
+            ,paidin_account=#{paidinAccount}
+            ,reminder_number=#{reminderNumber}
+            ,operator_id=#{operatorId}
+            ,vip_id=#{vipId}
+            ,one_bill_for_all_id=#{oneBillForAllId}
+            ,store_number=#{storeNumber}
+            ,time_manage_id=#{timeManageId}
+            ,order_id=#{orderId}
+            ,start_counter_time=#{startCounterTime}
+            ,stop_counter_time=#{stopCounterTime}
+            ,one_for_all_time=#{oneForAllTime}
+            ,merge_counter_time=#{mergeCounterTime}
+            ,merge_counter_sign=#{mergeCounterSign}
+            ,merge_counter_id=#{mergeCounterId}
+            ,state=#{state}
+            ,sequence=#{sequence}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyDbOrderById" parameterType="com.changjiang.entity.DbOrder">
+        update db_order
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="typeId != null">
+                type_id=#{typeId},
+            </if>
+            <if test="orderTime != null">
+                order_time=#{orderTime},
+            </if>
+            <if test="checkoutTime != null">
+                checkout_time=#{checkoutTime},
+            </if>
+            <if test="receivables != null">
+                receivables=#{receivables},
+            </if>
+            <if test="paidinAccount != null">
+                paidin_account=#{paidinAccount},
+            </if>
+            <if test="reminderNumber != null">
+                reminder_number=#{reminderNumber},
+            </if>
+            <if test="operatorId != null">
+                operator_id=#{operatorId},
+            </if>
+            <if test="vipId != null">
+                vip_id=#{vipId},
+            </if>
+            <if test="oneBillForAllId != null">
+                one_bill_for_all_id=#{oneBillForAllId},
+            </if>
+            <if test="storeNumber != null">
+                store_number=#{storeNumber},
+            </if>
+            <if test="timeManageId != null">
+                time_manage_id=#{timeManageId},
+            </if>
+            <if test="orderId != null">
+                order_id=#{orderId},
+            </if>
+            <if test="startCounterTime != null">
+                start_counter_time=#{startCounterTime},
+            </if>
+            <if test="stopCounterTime != null">
+                stop_counter_time=#{stopCounterTime},
+            </if>
+            <if test="oneForAllTime != null">
+                one_for_all_time=#{oneForAllTime},
+            </if>
+            <if test="mergeCounterTime != null">
+                merge_counter_time=#{mergeCounterTime},
+            </if>
+            <if test="mergeCounterSign != null">
+                merge_counter_sign=#{mergeCounterSign},
+            </if>
+            <if test="mergeCounterId != null">
+                merge_counter_id=#{mergeCounterId},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="sequence != null">
+                sequence=#{sequence},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateDbOrder" parameterType="map">
+        update db_order
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                type_id=#{enti.typeId},
+                order_time=#{enti.orderTime},
+                checkout_time=#{enti.checkoutTime},
+                receivables=#{enti.receivables},
+                paidin_account=#{enti.paidinAccount},
+                reminder_number=#{enti.reminderNumber},
+                operator_id=#{enti.operatorId},
+                vip_id=#{enti.vipId},
+                one_bill_for_all_id=#{enti.oneBillForAllId},
+                store_number=#{enti.storeNumber},
+                time_manage_id=#{enti.timeManageId},
+                order_id=#{enti.orderId},
+                start_counter_time=#{enti.startCounterTime},
+                stop_counter_time=#{enti.stopCounterTime},
+                one_for_all_time=#{enti.oneForAllTime},
+                merge_counter_time=#{enti.mergeCounterTime},
+                merge_counter_sign=#{enti.mergeCounterSign},
+                merge_counter_id=#{enti.mergeCounterId},
+                state=#{enti.state},
+                sequence=#{enti.sequence},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyDbOrder" parameterType="map">
+        update db_order
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.typeId != null">
+                type_id=#{enti.typeId},
+            </if>
+            <if test="enti.orderTime != null">
+                order_time=#{enti.orderTime},
+            </if>
+            <if test="enti.checkoutTime != null">
+                checkout_time=#{enti.checkoutTime},
+            </if>
+            <if test="enti.receivables != null">
+                receivables=#{enti.receivables},
+            </if>
+            <if test="enti.paidinAccount != null">
+                paidin_account=#{enti.paidinAccount},
+            </if>
+            <if test="enti.reminderNumber != null">
+                reminder_number=#{enti.reminderNumber},
+            </if>
+            <if test="enti.operatorId != null">
+                operator_id=#{enti.operatorId},
+            </if>
+            <if test="enti.vipId != null">
+                vip_id=#{enti.vipId},
+            </if>
+            <if test="enti.oneBillForAllId != null">
+                one_bill_for_all_id=#{enti.oneBillForAllId},
+            </if>
+            <if test="enti.storeNumber != null">
+                store_number=#{enti.storeNumber},
+            </if>
+            <if test="enti.timeManageId != null">
+                time_manage_id=#{enti.timeManageId},
+            </if>
+            <if test="enti.orderId != null">
+                order_id=#{enti.orderId},
+            </if>
+            <if test="enti.startCounterTime != null">
+                start_counter_time=#{enti.startCounterTime},
+            </if>
+            <if test="enti.stopCounterTime != null">
+                stop_counter_time=#{enti.stopCounterTime},
+            </if>
+            <if test="enti.oneForAllTime != null">
+                one_for_all_time=#{enti.oneForAllTime},
+            </if>
+            <if test="enti.mergeCounterTime != null">
+                merge_counter_time=#{enti.mergeCounterTime},
+            </if>
+            <if test="enti.mergeCounterSign != null">
+                merge_counter_sign=#{enti.mergeCounterSign},
+            </if>
+            <if test="enti.mergeCounterId != null">
+                merge_counter_id=#{enti.mergeCounterId},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.sequence != null">
+                sequence=#{enti.sequence},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

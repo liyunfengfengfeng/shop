@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.CounterWorkStationRecordDao">
+    <resultMap id="result_CounterWorkStationRecord_Map" type="com.changjiang.entity.CounterWorkStationRecord">
+        <id column="CounterWorkStationRecord0" property="id" />
+        <result column="CounterWorkStationRecord1" property="counterId" />
+        <result column="CounterWorkStationRecord2" property="workStationId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="counter_work_station_record_Column">
+        counter_work_station_record.id as CounterWorkStationRecord0
+        ,counter_work_station_record.counter_id as CounterWorkStationRecord1
+        ,counter_work_station_record.work_station_id as CounterWorkStationRecord2
+    </sql>
+
+    <select id="getCounterWorkStationRecordRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from counter_work_station_record
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectCounterWorkStationRecord" parameterType="com.changjiang.common.Assist"  resultMap="result_CounterWorkStationRecord_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="counter_work_station_record_Column" /> 
+            </otherwise>
+        </choose>
+        from counter_work_station_record
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectCounterWorkStationRecordById" parameterType="java.lang.Integer" resultMap="result_CounterWorkStationRecord_Map">
+        select 
+            <include refid="counter_work_station_record_Column" /> 
+        from counter_work_station_record
+        where counter_work_station_record.id = #{id}
+    </select> 
+
+
+    <insert id="insertCounterWorkStationRecord" parameterType="com.changjiang.entity.CounterWorkStationRecord">
+        insert into counter_work_station_record(id,counter_id,work_station_id) 
+        values(#{id},#{counterId},#{workStationId})
+    </insert>
+
+    <insert id="insertNonEmptyCounterWorkStationRecord" parameterType="com.changjiang.entity.CounterWorkStationRecord">
+        insert into counter_work_station_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="counterId != null">counter_id,</if>
+            <if test="workStationId != null">work_station_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="counterId != null"> #{counterId},</if>
+            <if test="workStationId != null"> #{workStationId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCounterWorkStationRecordById" parameterType="java.lang.Integer">
+        delete from counter_work_station_record
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteCounterWorkStationRecord" parameterType="com.changjiang.common.Assist">
+        delete from counter_work_station_record
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateCounterWorkStationRecordById" parameterType="com.changjiang.entity.CounterWorkStationRecord">
+        update counter_work_station_record set
+            counter_id=#{counterId}
+            ,work_station_id=#{workStationId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyCounterWorkStationRecordById" parameterType="com.changjiang.entity.CounterWorkStationRecord">
+        update counter_work_station_record
+        <set>
+            <if test="counterId != null">
+                counter_id=#{counterId},
+            </if>
+            <if test="workStationId != null">
+                work_station_id=#{workStationId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateCounterWorkStationRecord" parameterType="map">
+        update counter_work_station_record
+        <set>
+                id=#{enti.id},
+                counter_id=#{enti.counterId},
+                work_station_id=#{enti.workStationId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyCounterWorkStationRecord" parameterType="map">
+        update counter_work_station_record
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.counterId != null">
+                counter_id=#{enti.counterId},
+            </if>
+            <if test="enti.workStationId != null">
+                work_station_id=#{enti.workStationId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

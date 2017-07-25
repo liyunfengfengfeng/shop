@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.OrderProducteDao">
+    <resultMap id="result_OrderProducte_Map" type="com.changjiang.entity.OrderProducte">
+        <id column="OrderProducte0" property="id" />
+        <result column="OrderProducte1" property="name" />
+        <result column="OrderProducte2" property="orderId" />
+        <result column="OrderProducte3" property="producteId" />
+        <result column="OrderProducte4" property="number" />
+        <result column="OrderProducte5" property="price" />
+        <result column="OrderProducte6" property="serviceId" />
+        <result column="OrderProducte7" property="note" />
+        <result column="OrderProducte8" property="readyFinishTime" />
+        <result column="OrderProducte9" property="makeFinishTime" />
+        <result column="OrderProducte10" property="sendFinishTime" />
+        <result column="OrderProducte11" property="reminderNumber" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="order_producte_Column">
+        order_producte.id as OrderProducte0
+        ,order_producte.name as OrderProducte1
+        ,order_producte.order_id as OrderProducte2
+        ,order_producte.producte_id as OrderProducte3
+        ,order_producte.number as OrderProducte4
+        ,order_producte.price as OrderProducte5
+        ,order_producte.service_id as OrderProducte6
+        ,order_producte.note as OrderProducte7
+        ,order_producte.ready_finish_time as OrderProducte8
+        ,order_producte.make_finish_time as OrderProducte9
+        ,order_producte.send_finish_time as OrderProducte10
+        ,order_producte.reminder_number as OrderProducte11
+    </sql>
+
+    <select id="getOrderProducteRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from order_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectOrderProducte" parameterType="com.changjiang.common.Assist"  resultMap="result_OrderProducte_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="order_producte_Column" /> 
+            </otherwise>
+        </choose>
+        from order_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectOrderProducteById" parameterType="java.lang.Integer" resultMap="result_OrderProducte_Map">
+        select 
+            <include refid="order_producte_Column" /> 
+        from order_producte
+        where order_producte.id = #{id}
+    </select> 
+
+
+    <insert id="insertOrderProducte" parameterType="com.changjiang.entity.OrderProducte">
+        insert into order_producte(id,name,order_id,producte_id,number,price,service_id,note,ready_finish_time,make_finish_time,send_finish_time,reminder_number) 
+        values(#{id},#{name},#{orderId},#{producteId},#{number},#{price},#{serviceId},#{note},#{readyFinishTime},#{makeFinishTime},#{sendFinishTime},#{reminderNumber})
+    </insert>
+
+    <insert id="insertNonEmptyOrderProducte" parameterType="com.changjiang.entity.OrderProducte">
+        insert into order_producte
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="producteId != null">producte_id,</if>
+            <if test="number != null">number,</if>
+            <if test="price != null">price,</if>
+            <if test="serviceId != null">service_id,</if>
+            <if test="note != null">note,</if>
+            <if test="readyFinishTime != null">ready_finish_time,</if>
+            <if test="makeFinishTime != null">make_finish_time,</if>
+            <if test="sendFinishTime != null">send_finish_time,</if>
+            <if test="reminderNumber != null">reminder_number,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="orderId != null"> #{orderId},</if>
+            <if test="producteId != null"> #{producteId},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="price != null"> #{price},</if>
+            <if test="serviceId != null"> #{serviceId},</if>
+            <if test="note != null"> #{note},</if>
+            <if test="readyFinishTime != null"> #{readyFinishTime},</if>
+            <if test="makeFinishTime != null"> #{makeFinishTime},</if>
+            <if test="sendFinishTime != null"> #{sendFinishTime},</if>
+            <if test="reminderNumber != null"> #{reminderNumber},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteOrderProducteById" parameterType="java.lang.Integer">
+        delete from order_producte
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderProducte" parameterType="com.changjiang.common.Assist">
+        delete from order_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateOrderProducteById" parameterType="com.changjiang.entity.OrderProducte">
+        update order_producte set
+            name=#{name}
+            ,order_id=#{orderId}
+            ,producte_id=#{producteId}
+            ,number=#{number}
+            ,price=#{price}
+            ,service_id=#{serviceId}
+            ,note=#{note}
+            ,ready_finish_time=#{readyFinishTime}
+            ,make_finish_time=#{makeFinishTime}
+            ,send_finish_time=#{sendFinishTime}
+            ,reminder_number=#{reminderNumber}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyOrderProducteById" parameterType="com.changjiang.entity.OrderProducte">
+        update order_producte
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="orderId != null">
+                order_id=#{orderId},
+            </if>
+            <if test="producteId != null">
+                producte_id=#{producteId},
+            </if>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="price != null">
+                price=#{price},
+            </if>
+            <if test="serviceId != null">
+                service_id=#{serviceId},
+            </if>
+            <if test="note != null">
+                note=#{note},
+            </if>
+            <if test="readyFinishTime != null">
+                ready_finish_time=#{readyFinishTime},
+            </if>
+            <if test="makeFinishTime != null">
+                make_finish_time=#{makeFinishTime},
+            </if>
+            <if test="sendFinishTime != null">
+                send_finish_time=#{sendFinishTime},
+            </if>
+            <if test="reminderNumber != null">
+                reminder_number=#{reminderNumber},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateOrderProducte" parameterType="map">
+        update order_producte
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                order_id=#{enti.orderId},
+                producte_id=#{enti.producteId},
+                number=#{enti.number},
+                price=#{enti.price},
+                service_id=#{enti.serviceId},
+                note=#{enti.note},
+                ready_finish_time=#{enti.readyFinishTime},
+                make_finish_time=#{enti.makeFinishTime},
+                send_finish_time=#{enti.sendFinishTime},
+                reminder_number=#{enti.reminderNumber},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyOrderProducte" parameterType="map">
+        update order_producte
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.orderId != null">
+                order_id=#{enti.orderId},
+            </if>
+            <if test="enti.producteId != null">
+                producte_id=#{enti.producteId},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.price != null">
+                price=#{enti.price},
+            </if>
+            <if test="enti.serviceId != null">
+                service_id=#{enti.serviceId},
+            </if>
+            <if test="enti.note != null">
+                note=#{enti.note},
+            </if>
+            <if test="enti.readyFinishTime != null">
+                ready_finish_time=#{enti.readyFinishTime},
+            </if>
+            <if test="enti.makeFinishTime != null">
+                make_finish_time=#{enti.makeFinishTime},
+            </if>
+            <if test="enti.sendFinishTime != null">
+                send_finish_time=#{enti.sendFinishTime},
+            </if>
+            <if test="enti.reminderNumber != null">
+                reminder_number=#{enti.reminderNumber},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

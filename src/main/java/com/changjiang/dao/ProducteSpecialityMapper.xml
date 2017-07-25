@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.ProducteSpecialityDao">
+    <resultMap id="result_ProducteSpeciality_Map" type="com.changjiang.entity.ProducteSpeciality">
+        <id column="ProducteSpeciality0" property="id" />
+        <result column="ProducteSpeciality1" property="name" />
+        <result column="ProducteSpeciality2" property="dbDesc" />
+        <result column="ProducteSpeciality3" property="storeNumber" />
+        <result column="ProducteSpeciality4" property="storeProducte" />
+        <result column="ProducteSpeciality5" property="officialProducte" />
+        <result column="ProducteSpeciality6" property="degree" />
+        <result column="ProducteSpeciality7" property="officialSpecial" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="producte_speciality_Column">
+        producte_speciality.id as ProducteSpeciality0
+        ,producte_speciality.name as ProducteSpeciality1
+        ,producte_speciality.db_desc as ProducteSpeciality2
+        ,producte_speciality.store_number as ProducteSpeciality3
+        ,producte_speciality.store_producte as ProducteSpeciality4
+        ,producte_speciality.official_producte as ProducteSpeciality5
+        ,producte_speciality.degree as ProducteSpeciality6
+        ,producte_speciality.official_special as ProducteSpeciality7
+    </sql>
+
+    <select id="getProducteSpecialityRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from producte_speciality
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectProducteSpeciality" parameterType="com.changjiang.common.Assist"  resultMap="result_ProducteSpeciality_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="producte_speciality_Column" /> 
+            </otherwise>
+        </choose>
+        from producte_speciality
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectProducteSpecialityById" parameterType="java.lang.Integer" resultMap="result_ProducteSpeciality_Map">
+        select 
+            <include refid="producte_speciality_Column" /> 
+        from producte_speciality
+        where producte_speciality.id = #{id}
+    </select> 
+
+
+    <insert id="insertProducteSpeciality" parameterType="com.changjiang.entity.ProducteSpeciality">
+        insert into producte_speciality(id,name,db_desc,store_number,store_producte,official_producte,degree,official_special) 
+        values(#{id},#{name},#{dbDesc},#{storeNumber},#{storeProducte},#{officialProducte},#{degree},#{officialSpecial})
+    </insert>
+
+    <insert id="insertNonEmptyProducteSpeciality" parameterType="com.changjiang.entity.ProducteSpeciality">
+        insert into producte_speciality
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="storeNumber != null">store_number,</if>
+            <if test="storeProducte != null">store_producte,</if>
+            <if test="officialProducte != null">official_producte,</if>
+            <if test="degree != null">degree,</if>
+            <if test="officialSpecial != null">official_special,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="storeNumber != null"> #{storeNumber},</if>
+            <if test="storeProducte != null"> #{storeProducte},</if>
+            <if test="officialProducte != null"> #{officialProducte},</if>
+            <if test="degree != null"> #{degree},</if>
+            <if test="officialSpecial != null"> #{officialSpecial},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteProducteSpecialityById" parameterType="java.lang.Integer">
+        delete from producte_speciality
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteProducteSpeciality" parameterType="com.changjiang.common.Assist">
+        delete from producte_speciality
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateProducteSpecialityById" parameterType="com.changjiang.entity.ProducteSpeciality">
+        update producte_speciality set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,store_number=#{storeNumber}
+            ,store_producte=#{storeProducte}
+            ,official_producte=#{officialProducte}
+            ,degree=#{degree}
+            ,official_special=#{officialSpecial}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyProducteSpecialityById" parameterType="com.changjiang.entity.ProducteSpeciality">
+        update producte_speciality
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="storeNumber != null">
+                store_number=#{storeNumber},
+            </if>
+            <if test="storeProducte != null">
+                store_producte=#{storeProducte},
+            </if>
+            <if test="officialProducte != null">
+                official_producte=#{officialProducte},
+            </if>
+            <if test="degree != null">
+                degree=#{degree},
+            </if>
+            <if test="officialSpecial != null">
+                official_special=#{officialSpecial},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateProducteSpeciality" parameterType="map">
+        update producte_speciality
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                store_number=#{enti.storeNumber},
+                store_producte=#{enti.storeProducte},
+                official_producte=#{enti.officialProducte},
+                degree=#{enti.degree},
+                official_special=#{enti.officialSpecial},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyProducteSpeciality" parameterType="map">
+        update producte_speciality
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.storeNumber != null">
+                store_number=#{enti.storeNumber},
+            </if>
+            <if test="enti.storeProducte != null">
+                store_producte=#{enti.storeProducte},
+            </if>
+            <if test="enti.officialProducte != null">
+                official_producte=#{enti.officialProducte},
+            </if>
+            <if test="enti.degree != null">
+                degree=#{enti.degree},
+            </if>
+            <if test="enti.officialSpecial != null">
+                official_special=#{enti.officialSpecial},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

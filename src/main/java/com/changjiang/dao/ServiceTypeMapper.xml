@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.ServiceTypeDao">
+    <resultMap id="result_ServiceType_Map" type="com.changjiang.entity.ServiceType">
+        <id column="ServiceType0" property="id" />
+        <result column="ServiceType1" property="number" />
+        <result column="ServiceType2" property="name" />
+        <result column="ServiceType3" property="dbDesc" />
+        <result column="ServiceType4" property="state" />
+        <result column="ServiceType5" property="storeNumber" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="service_type_Column">
+        service_type.id as ServiceType0
+        ,service_type.number as ServiceType1
+        ,service_type.name as ServiceType2
+        ,service_type.db_desc as ServiceType3
+        ,service_type.state as ServiceType4
+        ,service_type.store_number as ServiceType5
+    </sql>
+
+    <select id="getServiceTypeRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from service_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectServiceType" parameterType="com.changjiang.common.Assist"  resultMap="result_ServiceType_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="service_type_Column" /> 
+            </otherwise>
+        </choose>
+        from service_type
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectServiceTypeById" parameterType="java.lang.Integer" resultMap="result_ServiceType_Map">
+        select 
+            <include refid="service_type_Column" /> 
+        from service_type
+        where service_type.id = #{id}
+    </select> 
+
+
+    <insert id="insertServiceType" parameterType="com.changjiang.entity.ServiceType">
+        insert into service_type(id,number,name,db_desc,state,store_number) 
+        values(#{id},#{number},#{name},#{dbDesc},#{state},#{storeNumber})
+    </insert>
+
+    <insert id="insertNonEmptyServiceType" parameterType="com.changjiang.entity.ServiceType">
+        insert into service_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="state != null">state,</if>
+            <if test="storeNumber != null">store_number,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="storeNumber != null"> #{storeNumber},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteServiceTypeById" parameterType="java.lang.Integer">
+        delete from service_type
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteServiceType" parameterType="com.changjiang.common.Assist">
+        delete from service_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateServiceTypeById" parameterType="com.changjiang.entity.ServiceType">
+        update service_type set
+            number=#{number}
+            ,name=#{name}
+            ,db_desc=#{dbDesc}
+            ,state=#{state}
+            ,store_number=#{storeNumber}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyServiceTypeById" parameterType="com.changjiang.entity.ServiceType">
+        update service_type
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="storeNumber != null">
+                store_number=#{storeNumber},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateServiceType" parameterType="map">
+        update service_type
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                state=#{enti.state},
+                store_number=#{enti.storeNumber},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyServiceType" parameterType="map">
+        update service_type
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.storeNumber != null">
+                store_number=#{enti.storeNumber},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

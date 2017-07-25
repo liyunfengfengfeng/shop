@@ -1,0 +1,14 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/resources=UTF-8
+encoding//src/main/resources/db.properties=UTF-8
+encoding//src/main/resources/log4j.properties=UTF-8
+encoding//src/main/resources/yangtze_assets/templates/menu.html=UTF-8
+encoding//src/main/resources/yangtze_assets/templates/role.html=UTF-8
+encoding//src/main/resources/yangtze_assets/templates/role_add.html=UTF-8
+encoding//src/main/resources/yangtze_assets/templates/user.html=UTF-8
+encoding//src/main/resources/yangtze_assets/templates/user_add.html=UTF-8
+encoding//src/main/resources/yangtze_assets/templates/user_details.html=UTF-8
+encoding//src/test/java=UTF-8
+encoding/<project>=UTF-8
+encoding/redis.properties=UTF-8

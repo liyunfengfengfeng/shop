@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.StoreProducteDao">
+    <resultMap id="result_StoreProducte_Map" type="com.changjiang.entity.StoreProducte">
+        <id column="StoreProducte0" property="id" />
+        <result column="StoreProducte1" property="name" />
+        <result column="StoreProducte2" property="dbDesc" />
+        <result column="StoreProducte3" property="video" />
+        <result column="StoreProducte4" property="rawMaterial" />
+        <result column="StoreProducte5" property="price" />
+        <result column="StoreProducte6" property="privilege" />
+        <result column="StoreProducte7" property="officialTrade" />
+        <result column="StoreProducte8" property="type" />
+        <result column="StoreProducte9" property="storeId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="store_producte_Column">
+        store_producte.id as StoreProducte0
+        ,store_producte.name as StoreProducte1
+        ,store_producte.db_desc as StoreProducte2
+        ,store_producte.video as StoreProducte3
+        ,store_producte.raw_material as StoreProducte4
+        ,store_producte.price as StoreProducte5
+        ,store_producte.privilege as StoreProducte6
+        ,store_producte.official_trade as StoreProducte7
+        ,store_producte.type as StoreProducte8
+        ,store_producte.store_id as StoreProducte9
+    </sql>
+
+    <select id="getStoreProducteRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from store_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectStoreProducte" parameterType="com.changjiang.common.Assist"  resultMap="result_StoreProducte_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="store_producte_Column" /> 
+            </otherwise>
+        </choose>
+        from store_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectStoreProducteById" parameterType="java.lang.Integer" resultMap="result_StoreProducte_Map">
+        select 
+            <include refid="store_producte_Column" /> 
+        from store_producte
+        where store_producte.id = #{id}
+    </select> 
+
+
+    <insert id="insertStoreProducte" parameterType="com.changjiang.entity.StoreProducte">
+        insert into store_producte(id,name,db_desc,video,raw_material,price,privilege,official_trade,type,store_id) 
+        values(#{id},#{name},#{dbDesc},#{video},#{rawMaterial},#{price},#{privilege},#{officialTrade},#{type},#{storeId})
+    </insert>
+
+    <insert id="insertNonEmptyStoreProducte" parameterType="com.changjiang.entity.StoreProducte">
+        insert into store_producte
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="video != null">video,</if>
+            <if test="rawMaterial != null">raw_material,</if>
+            <if test="price != null">price,</if>
+            <if test="privilege != null">privilege,</if>
+            <if test="officialTrade != null">official_trade,</if>
+            <if test="type != null">type,</if>
+            <if test="storeId != null">store_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="video != null"> #{video},</if>
+            <if test="rawMaterial != null"> #{rawMaterial},</if>
+            <if test="price != null"> #{price},</if>
+            <if test="privilege != null"> #{privilege},</if>
+            <if test="officialTrade != null"> #{officialTrade},</if>
+            <if test="type != null"> #{type},</if>
+            <if test="storeId != null"> #{storeId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteStoreProducteById" parameterType="java.lang.Integer">
+        delete from store_producte
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteStoreProducte" parameterType="com.changjiang.common.Assist">
+        delete from store_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateStoreProducteById" parameterType="com.changjiang.entity.StoreProducte">
+        update store_producte set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,video=#{video}
+            ,raw_material=#{rawMaterial}
+            ,price=#{price}
+            ,privilege=#{privilege}
+            ,official_trade=#{officialTrade}
+            ,type=#{type}
+            ,store_id=#{storeId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyStoreProducteById" parameterType="com.changjiang.entity.StoreProducte">
+        update store_producte
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="video != null">
+                video=#{video},
+            </if>
+            <if test="rawMaterial != null">
+                raw_material=#{rawMaterial},
+            </if>
+            <if test="price != null">
+                price=#{price},
+            </if>
+            <if test="privilege != null">
+                privilege=#{privilege},
+            </if>
+            <if test="officialTrade != null">
+                official_trade=#{officialTrade},
+            </if>
+            <if test="type != null">
+                type=#{type},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateStoreProducte" parameterType="map">
+        update store_producte
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                video=#{enti.video},
+                raw_material=#{enti.rawMaterial},
+                price=#{enti.price},
+                privilege=#{enti.privilege},
+                official_trade=#{enti.officialTrade},
+                type=#{enti.type},
+                store_id=#{enti.storeId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyStoreProducte" parameterType="map">
+        update store_producte
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.video != null">
+                video=#{enti.video},
+            </if>
+            <if test="enti.rawMaterial != null">
+                raw_material=#{enti.rawMaterial},
+            </if>
+            <if test="enti.price != null">
+                price=#{enti.price},
+            </if>
+            <if test="enti.privilege != null">
+                privilege=#{enti.privilege},
+            </if>
+            <if test="enti.officialTrade != null">
+                official_trade=#{enti.officialTrade},
+            </if>
+            <if test="enti.type != null">
+                type=#{enti.type},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

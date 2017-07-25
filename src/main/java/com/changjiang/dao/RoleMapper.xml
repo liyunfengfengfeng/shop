@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.RoleDao">
+    <resultMap id="result_Role_Map" type="com.changjiang.entity.Role">
+        <id column="Role0" property="id" />
+        <result column="Role1" property="name" />
+        <result column="Role2" property="dbDesc" />
+        <result column="Role3" property="icon" />
+        <result column="Role4" property="state" />
+        <result column="Role5" property="storeId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="role_Column">
+        role.id as Role0
+        ,role.name as Role1
+        ,role.db_desc as Role2
+        ,role.icon as Role3
+        ,role.state as Role4
+        ,role.store_id as Role5
+    </sql>
+
+    <select id="getRoleRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from role
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectRole" parameterType="com.changjiang.common.Assist"  resultMap="result_Role_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="role_Column" /> 
+            </otherwise>
+        </choose>
+        from role
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectRoleById" parameterType="java.lang.Integer" resultMap="result_Role_Map">
+        select 
+            <include refid="role_Column" /> 
+        from role
+        where role.id = #{id}
+    </select> 
+
+
+    <insert id="insertRole" parameterType="com.changjiang.entity.Role">
+        insert into role(id,name,db_desc,icon,state,store_id) 
+        values(#{id},#{name},#{dbDesc},#{icon},#{state},#{storeId})
+    </insert>
+
+    <insert id="insertNonEmptyRole" parameterType="com.changjiang.entity.Role">
+        insert into role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="icon != null">icon,</if>
+            <if test="state != null">state,</if>
+            <if test="storeId != null">store_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="icon != null"> #{icon},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="storeId != null"> #{storeId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteRoleById" parameterType="java.lang.Integer">
+        delete from role
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteRole" parameterType="com.changjiang.common.Assist">
+        delete from role
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateRoleById" parameterType="com.changjiang.entity.Role">
+        update role set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,icon=#{icon}
+            ,state=#{state}
+            ,store_id=#{storeId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyRoleById" parameterType="com.changjiang.entity.Role">
+        update role
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="icon != null">
+                icon=#{icon},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateRole" parameterType="map">
+        update role
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                icon=#{enti.icon},
+                state=#{enti.state},
+                store_id=#{enti.storeId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyRole" parameterType="map">
+        update role
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.icon != null">
+                icon=#{enti.icon},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

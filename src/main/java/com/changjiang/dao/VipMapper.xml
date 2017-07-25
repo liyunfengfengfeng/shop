@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.VipDao">
+    <resultMap id="result_Vip_Map" type="com.changjiang.entity.Vip">
+        <id column="Vip0" property="id" />
+        <result column="Vip1" property="number" />
+        <result column="Vip2" property="password" />
+        <result column="Vip3" property="vipTypeId" />
+        <result column="Vip4" property="name" />
+        <result column="Vip5" property="telephone" />
+        <result column="Vip6" property="gender" />
+        <result column="Vip7" property="qq" />
+        <result column="Vip8" property="wechat" />
+        <result column="Vip9" property="email" />
+        <result column="Vip10" property="personalizedSignature" />
+        <result column="Vip11" property="storeId" />
+        <result column="Vip12" property="state" />
+        <result column="Vip13" property="type" />
+        <result column="Vip14" property="score" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="vip_Column">
+        vip.id as Vip0
+        ,vip.number as Vip1
+        ,vip.password as Vip2
+        ,vip.vip_type_id as Vip3
+        ,vip.name as Vip4
+        ,vip.telephone as Vip5
+        ,vip.gender as Vip6
+        ,vip.QQ as Vip7
+        ,vip.WeChat as Vip8
+        ,vip.email as Vip9
+        ,vip.personalized_signature as Vip10
+        ,vip.store_id as Vip11
+        ,vip.state as Vip12
+        ,vip.type as Vip13
+        ,vip.score as Vip14
+    </sql>
+
+    <select id="getVipRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from vip
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectVip" parameterType="com.changjiang.common.Assist"  resultMap="result_Vip_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="vip_Column" /> 
+            </otherwise>
+        </choose>
+        from vip
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectVipById" parameterType="java.lang.Integer" resultMap="result_Vip_Map">
+        select 
+            <include refid="vip_Column" /> 
+        from vip
+        where vip.id = #{id}
+    </select> 
+
+	<!-- 通过店面id查找其下所有的会员信息 -->
+	<select id="queryVipsByStoreId" parameterType="java.lang.Integer" resultMap="result_Vip_Map">
+        select 
+            <include refid="vip_Column" /> 
+        from vip
+        where vip.store_id = #{id}
+    </select> 
+    <insert id="insertVip" parameterType="com.changjiang.entity.Vip">
+        insert into vip(id,number,password,vip_type_id,name,telephone,gender,QQ,WeChat,email,personalized_signature,store_id,state,type,score) 
+        values(#{id},#{number},#{password},#{vipTypeId},#{name},#{telephone},#{gender},#{qq},#{wechat},#{email},#{personalizedSignature},#{storeId},#{state},#{type},#{score})
+    </insert>
+
+    <insert id="insertNonEmptyVip" parameterType="com.changjiang.entity.Vip">
+        insert into vip
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="password != null">password,</if>
+            <if test="vipTypeId != null">vip_type_id,</if>
+            <if test="name != null">name,</if>
+            <if test="telephone != null">telephone,</if>
+            <if test="gender != null">gender,</if>
+            <if test="qq != null">QQ,</if>
+            <if test="wechat != null">WeChat,</if>
+            <if test="email != null">email,</if>
+            <if test="personalizedSignature != null">personalized_signature,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="state != null">state,</if>
+            <if test="type != null">type,</if>
+            <if test="score != null">score,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="password != null"> #{password},</if>
+            <if test="vipTypeId != null"> #{vipTypeId},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="telephone != null"> #{telephone},</if>
+            <if test="gender != null"> #{gender},</if>
+            <if test="qq != null"> #{qq},</if>
+            <if test="wechat != null"> #{wechat},</if>
+            <if test="email != null"> #{email},</if>
+            <if test="personalizedSignature != null"> #{personalizedSignature},</if>
+            <if test="storeId != null"> #{storeId},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="type != null"> #{type},</if>
+            <if test="score != null"> #{score},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteVipById" parameterType="java.lang.Integer">
+        delete from vip
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteVip" parameterType="com.changjiang.common.Assist">
+        delete from vip
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateVipById" parameterType="com.changjiang.entity.Vip">
+        update vip set
+            number=#{number}
+            ,password=#{password}
+            ,vip_type_id=#{vipTypeId}
+            ,name=#{name}
+            ,telephone=#{telephone}
+            ,gender=#{gender}
+            ,QQ=#{qq}
+            ,WeChat=#{wechat}
+            ,email=#{email}
+            ,personalized_signature=#{personalizedSignature}
+            ,store_id=#{storeId}
+            ,state=#{state}
+            ,type=#{type}
+            ,score=#{score}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyVipById" parameterType="com.changjiang.entity.Vip">
+        update vip
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="vipTypeId != null">
+                vip_type_id=#{vipTypeId},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="telephone != null">
+                telephone=#{telephone},
+            </if>
+            <if test="gender != null">
+                gender=#{gender},
+            </if>
+            <if test="qq != null">
+                QQ=#{qq},
+            </if>
+            <if test="wechat != null">
+                WeChat=#{wechat},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="personalizedSignature != null">
+                personalized_signature=#{personalizedSignature},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="type != null">
+                type=#{type},
+            </if>
+            <if test="score != null">
+                score=#{score},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateVip" parameterType="map">
+        update vip
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                password=#{enti.password},
+                vip_type_id=#{enti.vipTypeId},
+                name=#{enti.name},
+                telephone=#{enti.telephone},
+                gender=#{enti.gender},
+                QQ=#{enti.qq},
+                WeChat=#{enti.wechat},
+                email=#{enti.email},
+                personalized_signature=#{enti.personalizedSignature},
+                store_id=#{enti.storeId},
+                state=#{enti.state},
+                type=#{enti.type},
+                score=#{enti.score},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyVip" parameterType="map">
+        update vip
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.password != null">
+                password=#{enti.password},
+            </if>
+            <if test="enti.vipTypeId != null">
+                vip_type_id=#{enti.vipTypeId},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.telephone != null">
+                telephone=#{enti.telephone},
+            </if>
+            <if test="enti.gender != null">
+                gender=#{enti.gender},
+            </if>
+            <if test="enti.qq != null">
+                QQ=#{enti.qq},
+            </if>
+            <if test="enti.wechat != null">
+                WeChat=#{enti.wechat},
+            </if>
+            <if test="enti.email != null">
+                email=#{enti.email},
+            </if>
+            <if test="enti.personalizedSignature != null">
+                personalized_signature=#{enti.personalizedSignature},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.type != null">
+                type=#{enti.type},
+            </if>
+            <if test="enti.score != null">
+                score=#{enti.score},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

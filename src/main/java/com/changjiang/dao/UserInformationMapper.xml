@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.UserInformationDao">
+    <resultMap id="result_UserInformation_Map" type="com.changjiang.entity.UserInformation">
+        <id column="UserInformation0" property="id" />
+        <result column="UserInformation1" property="realname" />
+        <result column="UserInformation3" property="idNumber" />
+        <result column="UserInformation4" property="phone" />
+        <result column="UserInformation6" property="dbDesc" />
+        <result column="UserInformation7" property="sex" />
+        <result column="UserInformation8" property="icon" />
+        <result column="UserInformation9" property="address" />
+        <result column="UserInformation10" property="qq" />
+        <result column="UserInformation11" property="wechat" />
+        <result column="UserInformation12" property="email" />
+        <result column="UserInformation13" property="dutyId" />
+        <result column="UserInformation14" property="departmentId" />
+        <result column="UserInformation15" property="state" />
+        <result column="UserInformation16" property="storeId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="user_information_Column">
+        user_information.id as UserInformation0
+        ,user_information.realname as UserInformation1
+        ,user_information.id_number as UserInformation3
+        ,user_information.phone as UserInformation4
+        ,user_information.db_desc as UserInformation6
+        ,user_information.sex as UserInformation7
+        ,user_information.icon as UserInformation8
+        ,user_information.address as UserInformation9
+        ,user_information.qq as UserInformation10
+        ,user_information.wechat as UserInformation11
+        ,user_information.email as UserInformation12
+        ,user_information.duty_id as UserInformation13
+        ,user_information.department_id as UserInformation14
+        ,user_information.state as UserInformation15
+        ,user_information.store_id as UserInformation16
+    </sql>
+
+    <select id="getUserInformationRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from user_information
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectUserInformation" parameterType="com.changjiang.common.Assist"  resultMap="result_UserInformation_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="user_information_Column" /> 
+            </otherwise>
+        </choose>
+        from user_information
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectUserInformationById" parameterType="java.lang.Integer" resultMap="result_UserInformation_Map">
+        select 
+            <include refid="user_information_Column" /> 
+        from user_information
+        where user_information.id = #{id}
+    </select> 
+    <!-- 查询用户信息和他的所有评价 -->
+	<select id="queryUserInformationAndEvaluations" parameterType="java.lang.Integer" resultMap="result_UserInformation_Map2">
+        select 
+            *
+        from user_information
+        where user_information.id = #{id}
+    </select> 
+    <resultMap id="result_UserInformation_Map2" type="com.changjiang.entity.UserInformation">
+        <id column="UserInformation0" property="id" />
+        <result column="UserInformation1" property="realname" />
+        <result column="UserInformation3" property="idNumber" />
+        <result column="UserInformation4" property="phone" />
+        <result column="UserInformation6" property="dbDesc" />
+        <result column="UserInformation7" property="sex" />
+        <result column="UserInformation8" property="icon" />
+        <result column="UserInformation9" property="address" />
+        <result column="UserInformation10" property="qq" />
+        <result column="UserInformation11" property="wechat" />
+        <result column="UserInformation12" property="email" />
+        <result column="UserInformation13" property="dutyId" />
+        <result column="UserInformation14" property="departmentId" />
+        <result column="UserInformation15" property="state" />
+        <result column="UserInformation16" property="storeId" />
+        <collection property="userEvaluations" ofType="com.changjiang.entity.UserInformation" column="id" select="getUserEvaluations">
+        </collection>
+    </resultMap>
+    
+    <select id="getUserEvaluations" parameterType="int" resultType="com.changjiang.entity.UserInformation">
+        SELECT * FROM user_evaluation WHERE user_id=#{id}
+     </select>
+    
+    
+
+    <insert id="insertUserInformation" parameterType="com.changjiang.entity.UserInformation">
+        insert into user_information(id,realname,nickname,id_number,phone,password,db_desc,sex,icon,address,qq,wechat,email,duty_id,department_id,state,store_id) 
+        values(#{id},#{realname},#{idNumber},#{phone},#{dbDesc},#{sex},#{icon},#{address},#{qq},#{wechat},#{email},#{dutyId},#{departmentId},#{state},#{storeId})
+    </insert>
+
+    <insert id="insertNonEmptyUserInformation" parameterType="com.changjiang.entity.UserInformation">
+        insert into user_information
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="realname != null">realname,</if>
+            <if test="idNumber != null">id_number,</if>
+            <if test="phone != null">phone,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="sex != null">sex,</if>
+            <if test="icon != null">icon,</if>
+            <if test="address != null">address,</if>
+            <if test="qq != null">qq,</if>
+            <if test="wechat != null">wechat,</if>
+            <if test="email != null">email,</if>
+            <if test="dutyId != null">duty_id,</if>
+            <if test="departmentId != null">department_id,</if>
+            <if test="state != null">state,</if>
+            <if test="storeId != null">store_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="realname != null"> #{realname},</if>
+            <if test="idNumber != null"> #{idNumber},</if>
+            <if test="phone != null"> #{phone},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="sex != null"> #{sex},</if>
+            <if test="icon != null"> #{icon},</if>
+            <if test="address != null"> #{address},</if>
+            <if test="qq != null"> #{qq},</if>
+            <if test="wechat != null"> #{wechat},</if>
+            <if test="email != null"> #{email},</if>
+            <if test="dutyId != null"> #{dutyId},</if>
+            <if test="departmentId != null"> #{departmentId},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="storeId != null"> #{storeId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteUserInformationById" parameterType="java.lang.Integer">
+        delete from user_information
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteUserInformation" parameterType="com.changjiang.common.Assist">
+        delete from user_information
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateUserInformationById" parameterType="com.changjiang.entity.UserInformation">
+        update user_information set
+            realname=#{realname}
+            ,id_number=#{idNumber}
+            ,phone=#{phone}
+            ,db_desc=#{dbDesc}
+            ,sex=#{sex}
+            ,icon=#{icon}
+            ,address=#{address}
+            ,qq=#{qq}
+            ,wechat=#{wechat}
+            ,email=#{email}
+            ,duty_id=#{dutyId}
+            ,department_id=#{departmentId}
+            ,state=#{state}
+            ,store_id=#{storeId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyUserInformationById" parameterType="com.changjiang.entity.UserInformation">
+        update user_information
+        <set>
+            <if test="realname != null">
+                realname=#{realname},
+            </if>
+            <if test="idNumber != null">
+                id_number=#{idNumber},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="sex != null">
+                sex=#{sex},
+            </if>
+            <if test="icon != null">
+                icon=#{icon},
+            </if>
+            <if test="address != null">
+                address=#{address},
+            </if>
+            <if test="qq != null">
+                qq=#{qq},
+            </if>
+            <if test="wechat != null">
+                wechat=#{wechat},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="dutyId != null">
+                duty_id=#{dutyId},
+            </if>
+            <if test="departmentId != null">
+                department_id=#{departmentId},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateUserInformation" parameterType="map">
+        update user_information
+        <set>
+                id=#{enti.id},
+                realname=#{enti.realname},
+                id_number=#{enti.idNumber},
+                phone=#{enti.phone},
+                db_desc=#{enti.dbDesc},
+                sex=#{enti.sex},
+                icon=#{enti.icon},
+                address=#{enti.address},
+                qq=#{enti.qq},
+                wechat=#{enti.wechat},
+                email=#{enti.email},
+                duty_id=#{enti.dutyId},
+                department_id=#{enti.departmentId},
+                state=#{enti.state},
+                store_id=#{enti.storeId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyUserInformation" parameterType="map">
+        update user_information
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.realname != null">
+                realname=#{enti.realname},
+            </if>
+            <if test="enti.idNumber != null">
+                id_number=#{enti.idNumber},
+            </if>
+            <if test="enti.phone != null">
+                phone=#{enti.phone},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.sex != null">
+                sex=#{enti.sex},
+            </if>
+            <if test="enti.icon != null">
+                icon=#{enti.icon},
+            </if>
+            <if test="enti.address != null">
+                address=#{enti.address},
+            </if>
+            <if test="enti.qq != null">
+                qq=#{enti.qq},
+            </if>
+            <if test="enti.wechat != null">
+                wechat=#{enti.wechat},
+            </if>
+            <if test="enti.email != null">
+                email=#{enti.email},
+            </if>
+            <if test="enti.dutyId != null">
+                duty_id=#{enti.dutyId},
+            </if>
+            <if test="enti.departmentId != null">
+                department_id=#{enti.departmentId},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

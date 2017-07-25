@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.StoreTypeDao">
+    <resultMap id="result_StoreType_Map" type="com.changjiang.entity.StoreType">
+        <id column="StoreType0" property="id" />
+        <result column="StoreType1" property="storeTypeName" />
+        <result column="StoreType2" property="state" />
+        <result column="StoreType3" property="dbExplain" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="store_type_Column">
+        store_type.id as StoreType0
+        ,store_type.store_type_name as StoreType1
+        ,store_type.state as StoreType2
+        ,store_type.db_explain as StoreType3
+    </sql>
+
+    <select id="getStoreTypeRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from store_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectStoreType" parameterType="com.changjiang.common.Assist"  resultMap="result_StoreType_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="store_type_Column" /> 
+            </otherwise>
+        </choose>
+        from store_type
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectStoreTypeById" parameterType="java.lang.Integer" resultMap="result_StoreType_Map">
+        select 
+            <include refid="store_type_Column" /> 
+        from store_type
+        where store_type.id = #{id}
+    </select> 
+
+
+<!-- 通过店面类型查询所有的店面  嵌套结果: 使用嵌套结果映射来处理重复的联合结果的子集 -->
+    <select id="getStoresByStoreType" parameterType="int" resultMap="result_StoreType_Map2">
+          select *
+          FROM store s,store_type t
+          WHERE t.id = s.store_type_id
+          AND   t.id = #{id}
+    </select>
+    <resultMap id="result_StoreType_Map2" type="com.changjiang.entity.StoreType">
+        <id column="id" property="id" />
+        <result column="store_type_name" property="storeTypeName" />
+        <result column="state" property="state" />
+        <result column="desc" property="desc" />
+        <!-- ofType指定stores集合中的对象类型 -->
+        <collection property="stores" ofType="com.changjiang.entity.Store">
+            <id column="id" property="id" />
+            <result column="name" property="name" />
+            <result column="store_type_id" property="storeTypeId" />
+            <result column="address" property="address" />
+            <result column="phone" property="phone" />
+            <result column="legal_name" property="legalName" />
+            <result column="legal_name_phone" property="legalNamePhone" />
+            <result column="state" property="state" />
+            <result column="desc" property="desc" />
+            <result column="organization_id" property="organizationId" />
+        </collection>
+    </resultMap>
+
+
+
+    <insert id="insertStoreType" parameterType="com.changjiang.entity.StoreType">
+        insert into store_type(id,store_type_name,state,db_explain) 
+        values(#{id},#{storeTypeName},#{state},#{dbExplain})
+    </insert>
+
+    <insert id="insertNonEmptyStoreType" parameterType="com.changjiang.entity.StoreType">
+        insert into store_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="storeTypeName != null">store_type_name,</if>
+            <if test="state != null">state,</if>
+            <if test="dbExplain != null">db_explain,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="storeTypeName != null"> #{storeTypeName},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="dbExplain != null"> #{dbExplain},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteStoreTypeById" parameterType="java.lang.Integer">
+        delete from store_type
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteStoreType" parameterType="com.changjiang.common.Assist">
+        delete from store_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateStoreTypeById" parameterType="com.changjiang.entity.StoreType">
+        update store_type set
+            store_type_name=#{storeTypeName}
+            ,state=#{state}
+            ,db_explain=#{dbExplain}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyStoreTypeById" parameterType="com.changjiang.entity.StoreType">
+        update store_type
+        <set>
+            <if test="storeTypeName != null">
+                store_type_name=#{storeTypeName},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="dbExplain != null">
+                db_explain=#{dbExplain},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateStoreType" parameterType="map">
+        update store_type
+        <set>
+                id=#{enti.id},
+                store_type_name=#{enti.storeTypeName},
+                state=#{enti.state},
+                db_explain=#{enti.dbExplain},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyStoreType" parameterType="map">
+        update store_type
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.storeTypeName != null">
+                store_type_name=#{enti.storeTypeName},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.dbExplain != null">
+                db_explain=#{enti.dbExplain},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.VipGoupsDao">
+    <resultMap id="result_VipGoups_Map" type="com.changjiang.entity.VipGoups">
+        <id column="VipGoups0" property="id" />
+        <result column="VipGoups1" property="number" />
+        <result column="VipGoups2" property="name" />
+        <result column="VipGoups3" property="dbDesc" />
+        <result column="VipGoups4" property="discount" />
+        <result column="VipGoups5" property="storeNumber" />
+        <result column="VipGoups6" property="state" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="vip_goups_Column">
+        vip_goups.id as VipGoups0
+        ,vip_goups.number as VipGoups1
+        ,vip_goups.name as VipGoups2
+        ,vip_goups.db_desc as VipGoups3
+        ,vip_goups.discount as VipGoups4
+        ,vip_goups.store_number as VipGoups5
+        ,vip_goups.state as VipGoups6
+    </sql>
+    
+    <sql id="vip_Column">
+        vip.id as Vip0
+        ,vip.number as Vip1
+        ,vip.password as Vip2
+        ,vip.vip_type_id as Vip3
+        ,vip.name as Vip4
+        ,vip.telephone as Vip5
+        ,vip.gender as Vip6
+        ,vip.QQ as Vip7
+        ,vip.WeChat as Vip8
+        ,vip.email as Vip9
+        ,vip.personalized_signature as Vip10
+        ,vip.store_id as Vip11
+        ,vip.state as Vip12
+        ,vip.type as Vip13
+        ,vip.score as Vip14
+    </sql>
+    
+
+    <select id="getVipGoupsRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from vip_goups
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectVipGoups" parameterType="com.changjiang.common.Assist"  resultMap="result_VipGoups_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="vip_goups_Column" /> 
+            </otherwise>
+        </choose>
+        from vip_goups
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectVipGoupsById" parameterType="java.lang.Integer" resultMap="result_VipGoups_Map">
+        select 
+            <include refid="vip_goups_Column" /> 
+        from vip_goups
+        where vip_goups.id = #{id}
+    </select> 
+
+	<!-- 通过会员组id查询其下所有的会员信息 -->
+	<select id="selectVipGoupsByGoupId" parameterType="java.lang.Integer" resultMap="result_VipGoups_Map2">
+        select *
+        from vip_goups
+        where vip_goups.id = #{id}
+    </select> 
+	<resultMap id="result_VipGoups_Map2" type="com.changjiang.entity.VipGoups">
+        <id column="id" property="id" />
+        <result column="number" property="number" />
+        <result column="name" property="name" />
+        <result column="db_desc" property="dbDesc" />
+        <result column="discount" property="discount" />
+        <result column="store_number" property="storeNumber" />
+        <result column="state" property="state" />
+        <collection property="vips" ofType="com.changjiang.entity.Vip" column="id" select="getVip">
+        </collection>
+    </resultMap>
+	
+	<select id="getVip" parameterType="int" resultType="com.changjiang.entity.Vip">
+        SELECT  *  FROM vip WHERE vip_type_id=#{id}
+     </select>
+	
+	
+
+
+    <insert id="insertVipGoups" parameterType="com.changjiang.entity.VipGoups">
+        insert into vip_goups(id,number,name,db_desc,discount,store_number,state) 
+        values(#{id},#{number},#{name},#{dbDesc},#{discount},#{storeNumber},#{state})
+    </insert>
+
+    <insert id="insertNonEmptyVipGoups" parameterType="com.changjiang.entity.VipGoups">
+        insert into vip_goups
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="discount != null">discount,</if>
+            <if test="storeNumber != null">store_number,</if>
+            <if test="state != null">state,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="discount != null"> #{discount},</if>
+            <if test="storeNumber != null"> #{storeNumber},</if>
+            <if test="state != null"> #{state},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteVipGoupsById" parameterType="java.lang.Integer">
+        delete from vip_goups
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteVipGoups" parameterType="com.changjiang.common.Assist">
+        delete from vip_goups
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateVipGoupsById" parameterType="com.changjiang.entity.VipGoups">
+        update vip_goups set
+            number=#{number}
+            ,name=#{name}
+            ,db_desc=#{dbDesc}
+            ,discount=#{discount}
+            ,store_number=#{storeNumber}
+            ,state=#{state}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyVipGoupsById" parameterType="com.changjiang.entity.VipGoups">
+        update vip_goups
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="discount != null">
+                discount=#{discount},
+            </if>
+            <if test="storeNumber != null">
+                store_number=#{storeNumber},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateVipGoups" parameterType="map">
+        update vip_goups
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                discount=#{enti.discount},
+                store_number=#{enti.storeNumber},
+                state=#{enti.state},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyVipGoups" parameterType="map">
+        update vip_goups
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.discount != null">
+                discount=#{enti.discount},
+            </if>
+            <if test="enti.storeNumber != null">
+                store_number=#{enti.storeNumber},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

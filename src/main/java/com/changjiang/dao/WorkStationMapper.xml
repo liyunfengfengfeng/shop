@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.WorkStationDao">
+    <resultMap id="result_WorkStation_Map" type="com.changjiang.entity.WorkStation">
+        <id column="WorkStation0" property="id" />
+        <result column="WorkStation1" property="name" />
+        <result column="WorkStation2" property="userId" />
+        <result column="WorkStation3" property="goWorkTime" />
+        <result column="WorkStation4" property="leaveWorkTime" />
+        <result column="WorkStation5" property="departmentId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="work_station_Column">
+        work_station.id as WorkStation0
+        ,work_station.name as WorkStation1
+        ,work_station.user_id as WorkStation2
+        ,work_station.go_work_time as WorkStation3
+        ,work_station.leave_work_time as WorkStation4
+        ,work_station.department_id as WorkStation5
+    </sql>
+
+    <select id="getWorkStationRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from work_station
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectWorkStation" parameterType="com.changjiang.common.Assist"  resultMap="result_WorkStation_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="work_station_Column" /> 
+            </otherwise>
+        </choose>
+        from work_station
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectWorkStationById" parameterType="java.lang.Integer" resultMap="result_WorkStation_Map">
+        select 
+            <include refid="work_station_Column" /> 
+        from work_station
+        where work_station.id = #{id}
+    </select> 
+	<!-- 通过id查询岗位和岗位所对应的记录 -->
+	<select id="findWorkStationAndRecord" parameterType="int" resultMap="result_WorkStation_Map2">
+        select * from work_station where id=#{id}
+     </select>
+	<resultMap id="result_WorkStation_Map2" type="com.changjiang.entity.WorkStation">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="user_id" property="userId" />
+        <result column="go_work_time" property="goWorkTime" />
+        <result column="leave_work_time" property="leaveWorkTime" />
+        <result column="department_id" property="departmentId" />
+        <collection property="workstationRecords" ofType="com.changjiang.entity.WorkstationRecord" column="id" select="getWorkstationRecords">
+        </collection>
+    </resultMap>
+	<select id="getWorkstationRecords" parameterType="int" resultType="com.changjiang.entity.WorkstationRecord">
+        SELECT * FROM workstation_record WHERE work_station_id=#{id}
+     </select>
+	<!-- 通过id查询岗位和counter_work_station_record -->
+	 <select id="findWorkStationAndCounterStationRecord" parameterType="int" resultMap="result_WorkStation_Map3">
+        select * from work_station where id=#{id}
+     </select>
+	<resultMap id="result_WorkStation_Map3" type="com.changjiang.entity.WorkStation">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="user_id" property="userId" />
+        <result column="go_work_time" property="goWorkTime" />
+        <result column="leave_work_time" property="leaveWorkTime" />
+        <result column="department_id" property="departmentId" />
+        <collection property="counterWorkStationRecords" ofType="com.changjiang.entity.CounterWorkStationRecord" column="id" select="getCounterWorkStationRecords">
+        </collection>
+    </resultMap>
+	<select id="getCounterWorkStationRecords" parameterType="int" resultType="com.changjiang.entity.CounterWorkStationRecord">
+        SELECT * FROM counter_work_station_record WHERE work_station_id=#{id}
+     </select>
+
+
+
+
+
+    <insert id="insertWorkStation" parameterType="com.changjiang.entity.WorkStation">
+        insert into work_station(id,name,user_id,go_work_time,leave_work_time,department_id) 
+        values(#{id},#{name},#{userId},#{goWorkTime},#{leaveWorkTime},#{departmentId})
+    </insert>
+
+    <insert id="insertNonEmptyWorkStation" parameterType="com.changjiang.entity.WorkStation">
+        insert into work_station
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="goWorkTime != null">go_work_time,</if>
+            <if test="leaveWorkTime != null">leave_work_time,</if>
+            <if test="departmentId != null">department_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="userId != null"> #{userId},</if>
+            <if test="goWorkTime != null"> #{goWorkTime},</if>
+            <if test="leaveWorkTime != null"> #{leaveWorkTime},</if>
+            <if test="departmentId != null"> #{departmentId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteWorkStationById" parameterType="java.lang.Integer">
+        delete from work_station
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteWorkStation" parameterType="com.changjiang.common.Assist">
+        delete from work_station
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateWorkStationById" parameterType="com.changjiang.entity.WorkStation">
+        update work_station set
+            name=#{name}
+            ,user_id=#{userId}
+            ,go_work_time=#{goWorkTime}
+            ,leave_work_time=#{leaveWorkTime}
+            ,department_id=#{departmentId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyWorkStationById" parameterType="com.changjiang.entity.WorkStation">
+        update work_station
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="userId != null">
+                user_id=#{userId},
+            </if>
+            <if test="goWorkTime != null">
+                go_work_time=#{goWorkTime},
+            </if>
+            <if test="leaveWorkTime != null">
+                leave_work_time=#{leaveWorkTime},
+            </if>
+            <if test="departmentId != null">
+                department_id=#{departmentId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateWorkStation" parameterType="map">
+        update work_station
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                user_id=#{enti.userId},
+                go_work_time=#{enti.goWorkTime},
+                leave_work_time=#{enti.leaveWorkTime},
+                department_id=#{enti.departmentId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyWorkStation" parameterType="map">
+        update work_station
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.userId != null">
+                user_id=#{enti.userId},
+            </if>
+            <if test="enti.goWorkTime != null">
+                go_work_time=#{enti.goWorkTime},
+            </if>
+            <if test="enti.leaveWorkTime != null">
+                leave_work_time=#{enti.leaveWorkTime},
+            </if>
+            <if test="enti.departmentId != null">
+                department_id=#{enti.departmentId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

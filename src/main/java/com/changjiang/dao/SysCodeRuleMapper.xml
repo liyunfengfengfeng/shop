@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.SysCodeRuleDao">
+    <resultMap id="result_SysCodeRule_Map" type="com.changjiang.entity.SysCodeRule">
+        <id column="SysCodeRule0" property="id" />
+        <result column="SysCodeRule1" property="areaprefix" />
+        <result column="SysCodeRule2" property="areatime" />
+        <result column="SysCodeRule3" property="glidebit" />
+        <result column="SysCodeRule4" property="currentcode" />
+       
+        <result column="SysCodeRule6" property="nextseq" />
+        <result column="SysCodeRule7" property="curdate" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="sys_code_rule_Column">
+        sys_code_rule.id as SysCodeRule0
+        ,sys_code_rule.areaPrefix as SysCodeRule1
+        ,sys_code_rule.areaTime as SysCodeRule2
+        ,sys_code_rule.glideBit as SysCodeRule3
+        ,sys_code_rule.currentCode as SysCodeRule4
+       
+        ,sys_code_rule.nextseq as SysCodeRule6
+        ,sys_code_rule.curDate as SysCodeRule7
+    </sql>
+
+    <select id="getSysCodeRuleRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from sys_code_rule
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectSysCodeRule" parameterType="com.changjiang.common.Assist"  resultMap="result_SysCodeRule_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="sys_code_rule_Column" /> 
+            </otherwise>
+        </choose>
+        from sys_code_rule
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectSysCodeRuleById" parameterType="java.lang.Integer" resultMap="result_SysCodeRule_Map">
+        select 
+            <include refid="sys_code_rule_Column" /> 
+        from sys_code_rule
+        where sys_code_rule.id = #{id}
+    </select> 
+
+
+    <insert id="insertSysCodeRule" parameterType="com.changjiang.entity.SysCodeRule">
+        insert into sys_code_rule(id,areaPrefix,areaTime,glideBit,currentCode,available,nextseq,curDate) 
+        values(#{id},#{areaprefix},#{areatime},#{glidebit},#{currentcode},#{available},#{nextseq},#{curdate})
+    </insert>
+
+    <insert id="insertNonEmptySysCodeRule" parameterType="com.changjiang.entity.SysCodeRule">
+        insert into sys_code_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="areaprefix != null">areaPrefix,</if>
+            <if test="areatime != null">areaTime,</if>
+            <if test="glidebit != null">glideBit,</if>
+            <if test="currentcode != null">currentCode,</if>
+            <if test="available != null">available,</if>
+            <if test="nextseq != null">nextseq,</if>
+            <if test="curdate != null">curDate,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="areaprefix != null"> #{areaprefix},</if>
+            <if test="areatime != null"> #{areatime},</if>
+            <if test="glidebit != null"> #{glidebit},</if>
+            <if test="currentcode != null"> #{currentcode},</if>
+            <if test="available != null"> #{available},</if>
+            <if test="nextseq != null"> #{nextseq},</if>
+            <if test="curdate != null"> #{curdate},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteSysCodeRuleById" parameterType="java.lang.Integer">
+        delete from sys_code_rule
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteSysCodeRule" parameterType="com.changjiang.common.Assist">
+        delete from sys_code_rule
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateSysCodeRuleById" parameterType="com.changjiang.entity.SysCodeRule">
+        update sys_code_rule set
+            areaPrefix=#{areaprefix}
+            ,areaTime=#{areatime}
+            ,glideBit=#{glidebit}
+            ,currentCode=#{currentcode}
+            ,available=#{available}
+            ,nextseq=#{nextseq}
+            ,curDate=#{curdate}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptySysCodeRuleById" parameterType="com.changjiang.entity.SysCodeRule">
+        update sys_code_rule
+        <set>
+            <if test="areaprefix != null">
+                areaPrefix=#{areaprefix},
+            </if>
+            <if test="areatime != null">
+                areaTime=#{areatime},
+            </if>
+            <if test="glidebit != null">
+                glideBit=#{glidebit},
+            </if>
+            <if test="currentcode != null">
+                currentCode=#{currentcode},
+            </if>
+            <if test="available != null">
+                available=#{available},
+            </if>
+            <if test="nextseq != null">
+                nextseq=#{nextseq},
+            </if>
+            <if test="curdate != null">
+                curDate=#{curdate},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateSysCodeRule" parameterType="map">
+        update sys_code_rule
+        <set>
+                id=#{enti.id},
+                areaPrefix=#{enti.areaprefix},
+                areaTime=#{enti.areatime},
+                glideBit=#{enti.glidebit},
+                currentCode=#{enti.currentcode},
+                available=#{enti.available},
+                nextseq=#{enti.nextseq},
+                curDate=#{enti.curdate},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptySysCodeRule" parameterType="map">
+        update sys_code_rule
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.areaprefix != null">
+                areaPrefix=#{enti.areaprefix},
+            </if>
+            <if test="enti.areatime != null">
+                areaTime=#{enti.areatime},
+            </if>
+            <if test="enti.glidebit != null">
+                glideBit=#{enti.glidebit},
+            </if>
+            <if test="enti.currentcode != null">
+                currentCode=#{enti.currentcode},
+            </if>
+            <if test="enti.available != null">
+                available=#{enti.available},
+            </if>
+            <if test="enti.nextseq != null">
+                nextseq=#{enti.nextseq},
+            </if>
+            <if test="enti.curdate != null">
+                curDate=#{enti.curdate},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

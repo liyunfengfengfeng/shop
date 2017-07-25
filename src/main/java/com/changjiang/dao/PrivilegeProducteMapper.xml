@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.PrivilegeProducteDao">
+    <resultMap id="result_PrivilegeProducte_Map" type="com.changjiang.entity.PrivilegeProducte">
+        <id column="PrivilegeProducte0" property="id" />
+        <result column="PrivilegeProducte1" property="producteId" />
+        <result column="PrivilegeProducte2" property="privilegeId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="privilege_producte_Column">
+        privilege_producte.id as PrivilegeProducte0
+        ,privilege_producte.producte_id as PrivilegeProducte1
+        ,privilege_producte.privilege_id as PrivilegeProducte2
+    </sql>
+
+    <select id="getPrivilegeProducteRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from privilege_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectPrivilegeProducte" parameterType="com.changjiang.common.Assist"  resultMap="result_PrivilegeProducte_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="privilege_producte_Column" /> 
+            </otherwise>
+        </choose>
+        from privilege_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectPrivilegeProducteById" parameterType="java.lang.Integer" resultMap="result_PrivilegeProducte_Map">
+        select 
+            <include refid="privilege_producte_Column" /> 
+        from privilege_producte
+        where privilege_producte.id = #{id}
+    </select> 
+
+
+    <insert id="insertPrivilegeProducte" parameterType="com.changjiang.entity.PrivilegeProducte">
+        insert into privilege_producte(id,producte_id,privilege_id) 
+        values(#{id},#{producteId},#{privilegeId})
+    </insert>
+
+    <insert id="insertNonEmptyPrivilegeProducte" parameterType="com.changjiang.entity.PrivilegeProducte">
+        insert into privilege_producte
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="producteId != null">producte_id,</if>
+            <if test="privilegeId != null">privilege_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="producteId != null"> #{producteId},</if>
+            <if test="privilegeId != null"> #{privilegeId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deletePrivilegeProducteById" parameterType="java.lang.Integer">
+        delete from privilege_producte
+        where id = #{id}
+    </delete>
+
+    <delete id="deletePrivilegeProducte" parameterType="com.changjiang.common.Assist">
+        delete from privilege_producte
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updatePrivilegeProducteById" parameterType="com.changjiang.entity.PrivilegeProducte">
+        update privilege_producte set
+            producte_id=#{producteId}
+            ,privilege_id=#{privilegeId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyPrivilegeProducteById" parameterType="com.changjiang.entity.PrivilegeProducte">
+        update privilege_producte
+        <set>
+            <if test="producteId != null">
+                producte_id=#{producteId},
+            </if>
+            <if test="privilegeId != null">
+                privilege_id=#{privilegeId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updatePrivilegeProducte" parameterType="map">
+        update privilege_producte
+        <set>
+                id=#{enti.id},
+                producte_id=#{enti.producteId},
+                privilege_id=#{enti.privilegeId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyPrivilegeProducte" parameterType="map">
+        update privilege_producte
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.producteId != null">
+                producte_id=#{enti.producteId},
+            </if>
+            <if test="enti.privilegeId != null">
+                privilege_id=#{enti.privilegeId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

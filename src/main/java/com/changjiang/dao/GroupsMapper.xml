@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.GroupsDao">
+    <resultMap id="result_Groups_Map" type="com.changjiang.entity.Groups">
+        <id column="Groups0" property="id" />
+        <result column="Groups1" property="groupName" />
+        <result column="Groups2" property="dbDesc" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="groups_Column">
+        groups.id as Groups0
+        ,groups.group_name as Groups1
+        ,groups.db_desc as Groups2
+    </sql>
+
+    <select id="getGroupsRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from groups
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectGroups" parameterType="com.changjiang.common.Assist"  resultMap="result_Groups_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="groups_Column" /> 
+            </otherwise>
+        </choose>
+        from groups
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectGroupsById" parameterType="java.lang.Integer" resultMap="result_Groups_Map">
+        select 
+            <include refid="groups_Column" /> 
+        from groups
+        where groups.id = #{id}
+    </select> 
+
+
+    <insert id="insertGroups" parameterType="com.changjiang.entity.Groups">
+        insert into groups(id,group_name,db_desc) 
+        values(#{id},#{groupName},#{dbDesc})
+    </insert>
+
+    <insert id="insertNonEmptyGroups" parameterType="com.changjiang.entity.Groups">
+        insert into groups
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="groupName != null">group_name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="groupName != null"> #{groupName},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteGroupsById" parameterType="java.lang.Integer">
+        delete from groups
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteGroups" parameterType="com.changjiang.common.Assist">
+        delete from groups
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateGroupsById" parameterType="com.changjiang.entity.Groups">
+        update groups set
+            group_name=#{groupName}
+            ,db_desc=#{dbDesc}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyGroupsById" parameterType="com.changjiang.entity.Groups">
+        update groups
+        <set>
+            <if test="groupName != null">
+                group_name=#{groupName},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateGroups" parameterType="map">
+        update groups
+        <set>
+                id=#{enti.id},
+                group_name=#{enti.groupName},
+                db_desc=#{enti.dbDesc},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyGroups" parameterType="map">
+        update groups
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.groupName != null">
+                group_name=#{enti.groupName},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

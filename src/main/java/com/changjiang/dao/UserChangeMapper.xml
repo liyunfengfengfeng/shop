@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.UserChangeDao">
+    <resultMap id="result_UserChange_Map" type="com.changjiang.entity.UserChange">
+        <id column="UserChange0" property="id" />
+        <result column="UserChange1" property="realname" />
+        <result column="UserChange2" property="nickname" />
+        <result column="UserChange3" property="idNumber" />
+        <result column="UserChange4" property="phone" />
+        <result column="UserChange5" property="password" />
+        <result column="UserChange6" property="dbDesc" />
+        <result column="UserChange7" property="sex" />
+        <result column="UserChange8" property="icon" />
+        <result column="UserChange9" property="address" />
+        <result column="UserChange10" property="qq" />
+        <result column="UserChange11" property="wechat" />
+        <result column="UserChange12" property="email" />
+        <result column="UserChange13" property="userId" />
+        <result column="UserChange14" property="operateTime" />
+        <result column="UserChange15" property="operator" />
+        <result column="UserChange16" property="newRealname" />
+        <result column="UserChange17" property="newNickname" />
+        <result column="UserChange18" property="newIdNumber" />
+        <result column="UserChange19" property="newIcon" />
+        <result column="UserChange20" property="newPassword" />
+        <result column="UserChange21" property="newDesc" />
+        <result column="UserChange22" property="newSex" />
+        <result column="UserChange23" property="newAddress" />
+        <result column="UserChange24" property="newQq" />
+        <result column="UserChange25" property="newWechat" />
+        <result column="UserChange26" property="newEmail" />
+        <result column="UserChange27" property="role" />
+        <result column="UserChange28" property="newRole" />
+        <result column="UserChange29" property="duty" />
+        <result column="UserChange30" property="newDuty" />
+        <result column="UserChange31" property="department" />
+        <result column="UserChange32" property="newDepartment" />
+        <result column="UserChange33" property="counter" />
+        <result column="UserChange34" property="newCounter" />
+        <result column="UserChange35" property="store" />
+        <result column="UserChange36" property="newStore" />
+        <result column="UserChange37" property="number" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="user_change_Column">
+        user_change.id as UserChange0
+        ,user_change.realname as UserChange1
+        ,user_change.nickname as UserChange2
+        ,user_change.id_number as UserChange3
+        ,user_change.phone as UserChange4
+        ,user_change.password as UserChange5
+        ,user_change.db_desc as UserChange6
+        ,user_change.sex as UserChange7
+        ,user_change.icon as UserChange8
+        ,user_change.address as UserChange9
+        ,user_change.qq as UserChange10
+        ,user_change.wechat as UserChange11
+        ,user_change.email as UserChange12
+        ,user_change.user_id as UserChange13
+        ,user_change.operate_time as UserChange14
+        ,user_change.operator as UserChange15
+        ,user_change.new_realname as UserChange16
+        ,user_change.new_nickname as UserChange17
+        ,user_change.new_id_number as UserChange18
+        ,user_change.new_icon as UserChange19
+        ,user_change.new_password as UserChange20
+        ,user_change.new_desc as UserChange21
+        ,user_change.new_sex as UserChange22
+        ,user_change.new_address as UserChange23
+        ,user_change.new_qq as UserChange24
+        ,user_change.new_wechat as UserChange25
+        ,user_change.new_email as UserChange26
+        ,user_change.role as UserChange27
+        ,user_change.new_role as UserChange28
+        ,user_change.duty as UserChange29
+        ,user_change.new_duty as UserChange30
+        ,user_change.department as UserChange31
+        ,user_change.new_department as UserChange32
+        ,user_change.counter as UserChange33
+        ,user_change.new_counter as UserChange34
+        ,user_change.store as UserChange35
+        ,user_change.new_store as UserChange36
+        ,user_change.number as UserChange37
+    </sql>
+
+    <select id="getUserChangeRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from user_change
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectUserChange" parameterType="com.changjiang.common.Assist"  resultMap="result_UserChange_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="user_change_Column" /> 
+            </otherwise>
+        </choose>
+        from user_change
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectUserChangeById" parameterType="java.lang.Integer" resultMap="result_UserChange_Map">
+        select 
+            <include refid="user_change_Column" /> 
+        from user_change
+        where user_change.id = #{id}
+    </select> 
+
+
+    <insert id="insertUserChange" parameterType="com.changjiang.entity.UserChange">
+        insert into user_change(id,realname,nickname,id_number,phone,password,db_desc,sex,icon,address,qq,wechat,email,user_id,operate_time,operator,new_realname,new_nickname,new_id_number,new_icon,new_password,new_desc,new_sex,new_address,new_qq,new_wechat,new_email,role,new_role,duty,new_duty,department,new_department,counter,new_counter,store,new_store,number) 
+        values(#{id},#{realname},#{nickname},#{idNumber},#{phone},#{password},#{dbDesc},#{sex},#{icon},#{address},#{qq},#{wechat},#{email},#{userId},#{operateTime},#{operator},#{newRealname},#{newNickname},#{newIdNumber},#{newIcon},#{newPassword},#{newDesc},#{newSex},#{newAddress},#{newQq},#{newWechat},#{newEmail},#{role},#{newRole},#{duty},#{newDuty},#{department},#{newDepartment},#{counter},#{newCounter},#{store},#{newStore},#{number})
+    </insert>
+
+    <insert id="insertNonEmptyUserChange" parameterType="com.changjiang.entity.UserChange">
+        insert into user_change
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="realname != null">realname,</if>
+            <if test="nickname != null">nickname,</if>
+            <if test="idNumber != null">id_number,</if>
+            <if test="phone != null">phone,</if>
+            <if test="password != null">password,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="sex != null">sex,</if>
+            <if test="icon != null">icon,</if>
+            <if test="address != null">address,</if>
+            <if test="qq != null">qq,</if>
+            <if test="wechat != null">wechat,</if>
+            <if test="email != null">email,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="operateTime != null">operate_time,</if>
+            <if test="operator != null">operator,</if>
+            <if test="newRealname != null">new_realname,</if>
+            <if test="newNickname != null">new_nickname,</if>
+            <if test="newIdNumber != null">new_id_number,</if>
+            <if test="newIcon != null">new_icon,</if>
+            <if test="newPassword != null">new_password,</if>
+            <if test="newDesc != null">new_desc,</if>
+            <if test="newSex != null">new_sex,</if>
+            <if test="newAddress != null">new_address,</if>
+            <if test="newQq != null">new_qq,</if>
+            <if test="newWechat != null">new_wechat,</if>
+            <if test="newEmail != null">new_email,</if>
+            <if test="role != null">role,</if>
+            <if test="newRole != null">new_role,</if>
+            <if test="duty != null">duty,</if>
+            <if test="newDuty != null">new_duty,</if>
+            <if test="department != null">department,</if>
+            <if test="newDepartment != null">new_department,</if>
+            <if test="counter != null">counter,</if>
+            <if test="newCounter != null">new_counter,</if>
+            <if test="store != null">store,</if>
+            <if test="newStore != null">new_store,</if>
+            <if test="number != null">number,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="realname != null"> #{realname},</if>
+            <if test="nickname != null"> #{nickname},</if>
+            <if test="idNumber != null"> #{idNumber},</if>
+            <if test="phone != null"> #{phone},</if>
+            <if test="password != null"> #{password},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="sex != null"> #{sex},</if>
+            <if test="icon != null"> #{icon},</if>
+            <if test="address != null"> #{address},</if>
+            <if test="qq != null"> #{qq},</if>
+            <if test="wechat != null"> #{wechat},</if>
+            <if test="email != null"> #{email},</if>
+            <if test="userId != null"> #{userId},</if>
+            <if test="operateTime != null"> #{operateTime},</if>
+            <if test="operator != null"> #{operator},</if>
+            <if test="newRealname != null"> #{newRealname},</if>
+            <if test="newNickname != null"> #{newNickname},</if>
+            <if test="newIdNumber != null"> #{newIdNumber},</if>
+            <if test="newIcon != null"> #{newIcon},</if>
+            <if test="newPassword != null"> #{newPassword},</if>
+            <if test="newDesc != null"> #{newDesc},</if>
+            <if test="newSex != null"> #{newSex},</if>
+            <if test="newAddress != null"> #{newAddress},</if>
+            <if test="newQq != null"> #{newQq},</if>
+            <if test="newWechat != null"> #{newWechat},</if>
+            <if test="newEmail != null"> #{newEmail},</if>
+            <if test="role != null"> #{role},</if>
+            <if test="newRole != null"> #{newRole},</if>
+            <if test="duty != null"> #{duty},</if>
+            <if test="newDuty != null"> #{newDuty},</if>
+            <if test="department != null"> #{department},</if>
+            <if test="newDepartment != null"> #{newDepartment},</if>
+            <if test="counter != null"> #{counter},</if>
+            <if test="newCounter != null"> #{newCounter},</if>
+            <if test="store != null"> #{store},</if>
+            <if test="newStore != null"> #{newStore},</if>
+            <if test="number != null"> #{number},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteUserChangeById" parameterType="java.lang.Integer">
+        delete from user_change
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteUserChange" parameterType="com.changjiang.common.Assist">
+        delete from user_change
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateUserChangeById" parameterType="com.changjiang.entity.UserChange">
+        update user_change set
+            realname=#{realname}
+            ,nickname=#{nickname}
+            ,id_number=#{idNumber}
+            ,phone=#{phone}
+            ,password=#{password}
+            ,db_desc=#{dbDesc}
+            ,sex=#{sex}
+            ,icon=#{icon}
+            ,address=#{address}
+            ,qq=#{qq}
+            ,wechat=#{wechat}
+            ,email=#{email}
+            ,user_id=#{userId}
+            ,operate_time=#{operateTime}
+            ,operator=#{operator}
+            ,new_realname=#{newRealname}
+            ,new_nickname=#{newNickname}
+            ,new_id_number=#{newIdNumber}
+            ,new_icon=#{newIcon}
+            ,new_password=#{newPassword}
+            ,new_desc=#{newDesc}
+            ,new_sex=#{newSex}
+            ,new_address=#{newAddress}
+            ,new_qq=#{newQq}
+            ,new_wechat=#{newWechat}
+            ,new_email=#{newEmail}
+            ,role=#{role}
+            ,new_role=#{newRole}
+            ,duty=#{duty}
+            ,new_duty=#{newDuty}
+            ,department=#{department}
+            ,new_department=#{newDepartment}
+            ,counter=#{counter}
+            ,new_counter=#{newCounter}
+            ,store=#{store}
+            ,new_store=#{newStore}
+            ,number=#{number}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyUserChangeById" parameterType="com.changjiang.entity.UserChange">
+        update user_change
+        <set>
+            <if test="realname != null">
+                realname=#{realname},
+            </if>
+            <if test="nickname != null">
+                nickname=#{nickname},
+            </if>
+            <if test="idNumber != null">
+                id_number=#{idNumber},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="sex != null">
+                sex=#{sex},
+            </if>
+            <if test="icon != null">
+                icon=#{icon},
+            </if>
+            <if test="address != null">
+                address=#{address},
+            </if>
+            <if test="qq != null">
+                qq=#{qq},
+            </if>
+            <if test="wechat != null">
+                wechat=#{wechat},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="userId != null">
+                user_id=#{userId},
+            </if>
+            <if test="operateTime != null">
+                operate_time=#{operateTime},
+            </if>
+            <if test="operator != null">
+                operator=#{operator},
+            </if>
+            <if test="newRealname != null">
+                new_realname=#{newRealname},
+            </if>
+            <if test="newNickname != null">
+                new_nickname=#{newNickname},
+            </if>
+            <if test="newIdNumber != null">
+                new_id_number=#{newIdNumber},
+            </if>
+            <if test="newIcon != null">
+                new_icon=#{newIcon},
+            </if>
+            <if test="newPassword != null">
+                new_password=#{newPassword},
+            </if>
+            <if test="newDesc != null">
+                new_desc=#{newDesc},
+            </if>
+            <if test="newSex != null">
+                new_sex=#{newSex},
+            </if>
+            <if test="newAddress != null">
+                new_address=#{newAddress},
+            </if>
+            <if test="newQq != null">
+                new_qq=#{newQq},
+            </if>
+            <if test="newWechat != null">
+                new_wechat=#{newWechat},
+            </if>
+            <if test="newEmail != null">
+                new_email=#{newEmail},
+            </if>
+            <if test="role != null">
+                role=#{role},
+            </if>
+            <if test="newRole != null">
+                new_role=#{newRole},
+            </if>
+            <if test="duty != null">
+                duty=#{duty},
+            </if>
+            <if test="newDuty != null">
+                new_duty=#{newDuty},
+            </if>
+            <if test="department != null">
+                department=#{department},
+            </if>
+            <if test="newDepartment != null">
+                new_department=#{newDepartment},
+            </if>
+            <if test="counter != null">
+                counter=#{counter},
+            </if>
+            <if test="newCounter != null">
+                new_counter=#{newCounter},
+            </if>
+            <if test="store != null">
+                store=#{store},
+            </if>
+            <if test="newStore != null">
+                new_store=#{newStore},
+            </if>
+            <if test="number != null">
+                number=#{number},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateUserChange" parameterType="map">
+        update user_change
+        <set>
+                id=#{enti.id},
+                realname=#{enti.realname},
+                nickname=#{enti.nickname},
+                id_number=#{enti.idNumber},
+                phone=#{enti.phone},
+                password=#{enti.password},
+                db_desc=#{enti.dbDesc},
+                sex=#{enti.sex},
+                icon=#{enti.icon},
+                address=#{enti.address},
+                qq=#{enti.qq},
+                wechat=#{enti.wechat},
+                email=#{enti.email},
+                user_id=#{enti.userId},
+                operate_time=#{enti.operateTime},
+                operator=#{enti.operator},
+                new_realname=#{enti.newRealname},
+                new_nickname=#{enti.newNickname},
+                new_id_number=#{enti.newIdNumber},
+                new_icon=#{enti.newIcon},
+                new_password=#{enti.newPassword},
+                new_desc=#{enti.newDesc},
+                new_sex=#{enti.newSex},
+                new_address=#{enti.newAddress},
+                new_qq=#{enti.newQq},
+                new_wechat=#{enti.newWechat},
+                new_email=#{enti.newEmail},
+                role=#{enti.role},
+                new_role=#{enti.newRole},
+                duty=#{enti.duty},
+                new_duty=#{enti.newDuty},
+                department=#{enti.department},
+                new_department=#{enti.newDepartment},
+                counter=#{enti.counter},
+                new_counter=#{enti.newCounter},
+                store=#{enti.store},
+                new_store=#{enti.newStore},
+                number=#{enti.number},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyUserChange" parameterType="map">
+        update user_change
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.realname != null">
+                realname=#{enti.realname},
+            </if>
+            <if test="enti.nickname != null">
+                nickname=#{enti.nickname},
+            </if>
+            <if test="enti.idNumber != null">
+                id_number=#{enti.idNumber},
+            </if>
+            <if test="enti.phone != null">
+                phone=#{enti.phone},
+            </if>
+            <if test="enti.password != null">
+                password=#{enti.password},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.sex != null">
+                sex=#{enti.sex},
+            </if>
+            <if test="enti.icon != null">
+                icon=#{enti.icon},
+            </if>
+            <if test="enti.address != null">
+                address=#{enti.address},
+            </if>
+            <if test="enti.qq != null">
+                qq=#{enti.qq},
+            </if>
+            <if test="enti.wechat != null">
+                wechat=#{enti.wechat},
+            </if>
+            <if test="enti.email != null">
+                email=#{enti.email},
+            </if>
+            <if test="enti.userId != null">
+                user_id=#{enti.userId},
+            </if>
+            <if test="enti.operateTime != null">
+                operate_time=#{enti.operateTime},
+            </if>
+            <if test="enti.operator != null">
+                operator=#{enti.operator},
+            </if>
+            <if test="enti.newRealname != null">
+                new_realname=#{enti.newRealname},
+            </if>
+            <if test="enti.newNickname != null">
+                new_nickname=#{enti.newNickname},
+            </if>
+            <if test="enti.newIdNumber != null">
+                new_id_number=#{enti.newIdNumber},
+            </if>
+            <if test="enti.newIcon != null">
+                new_icon=#{enti.newIcon},
+            </if>
+            <if test="enti.newPassword != null">
+                new_password=#{enti.newPassword},
+            </if>
+            <if test="enti.newDesc != null">
+                new_desc=#{enti.newDesc},
+            </if>
+            <if test="enti.newSex != null">
+                new_sex=#{enti.newSex},
+            </if>
+            <if test="enti.newAddress != null">
+                new_address=#{enti.newAddress},
+            </if>
+            <if test="enti.newQq != null">
+                new_qq=#{enti.newQq},
+            </if>
+            <if test="enti.newWechat != null">
+                new_wechat=#{enti.newWechat},
+            </if>
+            <if test="enti.newEmail != null">
+                new_email=#{enti.newEmail},
+            </if>
+            <if test="enti.role != null">
+                role=#{enti.role},
+            </if>
+            <if test="enti.newRole != null">
+                new_role=#{enti.newRole},
+            </if>
+            <if test="enti.duty != null">
+                duty=#{enti.duty},
+            </if>
+            <if test="enti.newDuty != null">
+                new_duty=#{enti.newDuty},
+            </if>
+            <if test="enti.department != null">
+                department=#{enti.department},
+            </if>
+            <if test="enti.newDepartment != null">
+                new_department=#{enti.newDepartment},
+            </if>
+            <if test="enti.counter != null">
+                counter=#{enti.counter},
+            </if>
+            <if test="enti.newCounter != null">
+                new_counter=#{enti.newCounter},
+            </if>
+            <if test="enti.store != null">
+                store=#{enti.store},
+            </if>
+            <if test="enti.newStore != null">
+                new_store=#{enti.newStore},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

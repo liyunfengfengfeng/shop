@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.UsersDao">
+    <resultMap id="result_Users_Map" type="com.changjiang.entity.Users">
+        <id column="Users0" property="id" />
+        <result column="Users1" property="username" />
+        <result column="Users2" property="password" />
+        <result column="Users3" property="roleId" />
+        <result column="Users4" property="store" />
+        <result column="Users5" property="userInformation" />
+        <result column="Users6" property="enabled" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="users_Column">
+        users.id as Users0
+        ,users.username as Users1
+        ,users.password as Users2
+        ,users.role_id as Users3
+        ,users.store as Users4
+        ,users.user_information as Users5
+        ,users.enabled as Users6
+    </sql>
+
+    <select id="getUsersRowCount" parameterType="com.changjiang.common.Assist" 
+    resultType="java.lang.Long">
+        select count(id) from users
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectUsers" parameterType="com.changjiang.common.Assist"  
+    resultMap="result_Users_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        		<include refid="users_Column" /> 
+            </otherwise>
+        </choose>
+        from users
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null">
+         OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectUsersById" parameterType="java.lang.Integer" 
+    resultMap="result_Users_Map">
+        select 
+            <include refid="users_Column" /> 
+        from users
+        where users.id = #{id}
+    </select> 
+
+    <insert id="insertUsers" parameterType="com.changjiang.entity.Users">
+        insert into users(id,username,password,role_id,store,user_information,
+        enabled) 
+        values(#{id},#{username},#{password},#{roleId},#{store},
+        #{userInformation},#{enabled})
+    </insert>
+
+    <insert id="insertNonEmptyUsers" parameterType="com.changjiang.entity.Users">
+        insert into users
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="username != null">username,</if>
+            <if test="password != null">password,</if>
+            <if test="roleId != null">role_id,</if>
+            <if test="store != null">store,</if>
+            <if test="userInformation != null">user_information,</if>
+            <if test="enabled != null">enabled,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="username != null"> #{username},</if>
+            <if test="password != null"> #{password},</if>
+            <if test="roleId != null"> #{roleId},</if>
+            <if test="store != null"> #{store},</if>
+            <if test="userInformation != null"> #{userInformation},</if>
+            <if test="enabled != null"> #{enabled},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteUsersById" parameterType="java.lang.Integer">
+        delete from users
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteUsers" parameterType="com.changjiang.common.Assist">
+        delete from users
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateUsersById" parameterType="com.changjiang.entity.Users">
+        update users set
+            username=#{username}
+            ,password=#{password}
+            ,role_id=#{roleId}
+            ,store=#{store}
+            ,user_information=#{userInformation}
+            ,enabled=#{enabled}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyUsersById" parameterType="com.changjiang.entity.Users">
+        update users
+        <set>
+            <if test="username != null">
+                username=#{username},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="roleId != null">
+                role_id=#{roleId},
+            </if>
+            <if test="store != null">
+                store=#{store},
+            </if>
+            <if test="userInformation != null">
+                user_information=#{userInformation},
+            </if>
+            <if test="enabled != null">
+                enabled=#{enabled},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateUsers" parameterType="map">
+        update users
+        <set>
+                id=#{enti.id},
+                username=#{enti.username},
+                password=#{enti.password},
+                role_id=#{enti.roleId},
+                store=#{enti.store},
+                user_information=#{enti.userInformation},
+                enabled=#{enti.enabled},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyUsers" parameterType="map">
+        update users
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.username != null">
+                username=#{enti.username},
+            </if>
+            <if test="enti.password != null">
+                password=#{enti.password},
+            </if>
+            <if test="enti.roleId != null">
+                role_id=#{enti.roleId},
+            </if>
+            <if test="enti.store != null">
+                store=#{enti.store},
+            </if>
+            <if test="enti.userInformation != null">
+                user_information=#{enti.userInformation},
+            </if>
+            <if test="enti.enabled != null">
+                enabled=#{enti.enabled},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.AreaDao">
+    <resultMap id="result_Area_Map" type="com.changjiang.entity.Area">
+        <id column="Area0" property="id" />
+        <result column="Area1" property="name" />
+        <result column="Area2" property="store" />
+        <result column="Area3" property="state" />
+        <result column="Area4" property="dbDesc" />
+        <result column="Area5" property="upperLevelId" />
+        <result column="Area6" property="currentLevel" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="area_Column">
+        area.id as Area0
+        ,area.name as Area1
+        ,area.store as Area2
+        ,area.state as Area3
+        ,area.db_desc as Area4
+        ,area.upper_level_id as Area5
+        ,area.current_level as Area6
+    </sql>
+
+    <select id="getAreaRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from area
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectArea" parameterType="com.changjiang.common.Assist"  resultMap="result_Area_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="area_Column" /> 
+            </otherwise>
+        </choose>
+        from area
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectAreaById" parameterType="java.lang.Integer" resultMap="result_Area_Map">
+        select 
+            <include refid="area_Column" /> 
+        from area
+        where area.id = #{id}
+    </select> 
+	<!-- 查询区域以及区域下的柜台 -->
+	<select id="findAreaAndCounter" parameterType="int" resultMap="result_Area_Map2">
+        select * from area where id=#{id}
+     </select>
+	<resultMap id="result_Area_Map2" type="com.changjiang.entity.Area">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="store" property="store" />
+        <result column="state" property="state" />
+        <result column="db_desc" property="dbDesc" />
+        <result column="upper_level_id" property="upperLevelId" />
+        <result column="current_level" property="currentLevel" />
+        <collection property="counters" ofType="com.changjiang.entity.Counter" column="id" select="getCounters"></collection>
+    </resultMap>
+	<select id="getCounters" parameterType="int" resultType="com.changjiang.entity.Counter">
+        SELECT * FROM counter WHERE area=#{id}
+     </select>
+
+
+
+
+
+
+
+    <insert id="insertArea" parameterType="com.changjiang.entity.Area">
+        insert into area(id,name,store,state,db_desc,upper_level_id,current_level) 
+        values(#{id},#{name},#{store},#{state},#{dbDesc},#{upperLevelId},#{currentLevel})
+    </insert>
+
+    <insert id="insertNonEmptyArea" parameterType="com.changjiang.entity.Area">
+        insert into area
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="store != null">store,</if>
+            <if test="state != null">state,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="upperLevelId != null">upper_level_id,</if>
+            <if test="currentLevel != null">current_level,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="store != null"> #{store},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="upperLevelId != null"> #{upperLevelId},</if>
+            <if test="currentLevel != null"> #{currentLevel},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteAreaById" parameterType="java.lang.Integer">
+        delete from area
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteArea" parameterType="com.changjiang.common.Assist">
+        delete from area
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateAreaById" parameterType="com.changjiang.entity.Area">
+        update area set
+            name=#{name}
+            ,store=#{store}
+            ,state=#{state}
+            ,db_desc=#{dbDesc}
+            ,upper_level_id=#{upperLevelId}
+            ,current_level=#{currentLevel}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyAreaById" parameterType="com.changjiang.entity.Area">
+        update area
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="store != null">
+                store=#{store},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="upperLevelId != null">
+                upper_level_id=#{upperLevelId},
+            </if>
+            <if test="currentLevel != null">
+                current_level=#{currentLevel},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateArea" parameterType="map">
+        update area
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                store=#{enti.store},
+                state=#{enti.state},
+                db_desc=#{enti.dbDesc},
+                upper_level_id=#{enti.upperLevelId},
+                current_level=#{enti.currentLevel},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyArea" parameterType="map">
+        update area
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.store != null">
+                store=#{enti.store},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.upperLevelId != null">
+                upper_level_id=#{enti.upperLevelId},
+            </if>
+            <if test="enti.currentLevel != null">
+                current_level=#{enti.currentLevel},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

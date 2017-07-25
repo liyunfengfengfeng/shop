@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.ProducteTypeDao">
+    <resultMap id="result_ProducteType_Map" type="com.changjiang.entity.ProducteType">
+        <id column="ProducteType0" property="id" />
+        <result column="ProducteType1" property="name" />
+        <result column="ProducteType2" property="dbDesc" />
+        <result column="ProducteType3" property="storeNumber" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="producte_type_Column">
+        producte_type.id as ProducteType0
+        ,producte_type.name as ProducteType1
+        ,producte_type.db_desc as ProducteType2
+        ,producte_type.store_number as ProducteType3
+    </sql>
+
+    <select id="getProducteTypeRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from producte_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectProducteType" parameterType="com.changjiang.common.Assist"  resultMap="result_ProducteType_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="producte_type_Column" /> 
+            </otherwise>
+        </choose>
+        from producte_type
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectProducteTypeById" parameterType="java.lang.Integer" resultMap="result_ProducteType_Map">
+        select 
+            <include refid="producte_type_Column" /> 
+        from producte_type
+        where producte_type.id = #{id}
+    </select> 
+
+<!-- 通过产品类型查询所有的办公贸易与店面产品 -->
+    <select id="selectOfficialTradeAndProductByTypeId" parameterType="java.lang.Integer" resultMap="result_ProducteType_Map2">
+        select
+        *
+        from producte_type p,official_trade o,store_producte s
+        where p.id = o.official_type
+        AND   p.id = s.type
+        AND   p.id = #{id}
+    </select>
+    <resultMap id="result_ProducteType_Map2" type="com.changjiang.entity.ProducteType">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="desc" property="desc" />
+        <!-- ofType指定stores集合中的对象类型 -->
+        <collection property="officialTrades" ofType="com.changjiang.entity.OfficialTrade">
+            <id column="id" property="id" />
+            <result column="number" property="number" />
+            <result column="official_name" property="officialName" />
+            <result column="product_name" property="productName" />
+            <result column="alias" property="alias" />
+            <result column="official_type" property="officialType" />
+            <result column="former_name" property="formerName" />
+            <result column="desc" property="desc" />
+            <result column="official_price" property="officialPrice" />
+            <result column="icon" property="icon" />
+            <result column="video" property="video" />
+            <result column="statistical_categories" property="statisticalCategories" />
+            <result column="raw_material" property="rawMaterial" />
+        </collection>
+        <!-- ofType指定stores集合中的对象类型 -->
+        <collection property="storeProductes" ofType="com.changjiang.entity.StoreProducte">
+            <id column="id" property="id" />
+            <result column="name" property="name" />
+            <result column="desc" property="desc" />
+            <result column="video" property="video" />
+            <result column="raw_material" property="rawMaterial" />
+            <result column="price" property="price" />
+            <result column="special_price" property="specialPrice" />
+            <result column="official_trade" property="officialTrade" />
+            <result column="type" property="type" />
+        </collection>
+    </resultMap>
+
+
+<!-- 通过产品类型查询所有的办公贸易与店面产品 -->
+    <select id="selectStoreProductByTypeId" parameterType="java.lang.Integer" resultMap="result_ProducteType_Map3">
+        select *
+        from producte_type p , store_producte s
+        where p.id = s.type AND   p.id = #{id}
+    </select>
+    <resultMap id="result_ProducteType_Map3" type="com.changjiang.entity.ProducteType">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="desc" property="desc" />
+        <!-- ofType指定stores集合中的对象类型 -->
+        <collection property="storeProductes" ofType="com.changjiang.entity.StoreProducte">
+            <id column="id" property="id" />
+            <result column="name" property="name" />
+            <result column="desc" property="desc" />
+            <result column="video" property="video" />
+            <result column="raw_material" property="rawMaterial" />
+            <result column="price" property="price" />
+            <result column="special_price" property="specialPrice" />
+            <result column="official_trade" property="officialTrade" />
+            <result column="type" property="type" />
+        </collection>
+    </resultMap>
+
+    <insert id="insertProducteType" parameterType="com.changjiang.entity.ProducteType">
+        insert into producte_type(id,name,db_desc,store_number) 
+        values(#{id},#{name},#{dbDesc},#{storeNumber})
+    </insert>
+
+    <insert id="insertNonEmptyProducteType" parameterType="com.changjiang.entity.ProducteType">
+        insert into producte_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="storeNumber != null">store_number,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="storeNumber != null"> #{storeNumber},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteProducteTypeById" parameterType="java.lang.Integer">
+        delete from producte_type
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteProducteType" parameterType="com.changjiang.common.Assist">
+        delete from producte_type
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateProducteTypeById" parameterType="com.changjiang.entity.ProducteType">
+        update producte_type set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,store_number=#{storeNumber}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyProducteTypeById" parameterType="com.changjiang.entity.ProducteType">
+        update producte_type
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="storeNumber != null">
+                store_number=#{storeNumber},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateProducteType" parameterType="map">
+        update producte_type
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                store_number=#{enti.storeNumber},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyProducteType" parameterType="map">
+        update producte_type
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.storeNumber != null">
+                store_number=#{enti.storeNumber},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

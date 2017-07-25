@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.CombinationProductsDao">
+    <resultMap id="result_CombinationProducts_Map" type="com.changjiang.entity.CombinationProducts">
+        <id column="CombinationProducts0" property="id" />
+        <result column="CombinationProducts1" property="name" />
+        <result column="CombinationProducts2" property="dbDesc" />
+        <result column="CombinationProducts3" property="price" />
+        <result column="CombinationProducts4" property="privilegePrice" />
+        <result column="CombinationProducts5" property="sumPrice" />
+        <result column="CombinationProducts6" property="storeId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="combination_products_Column">
+        combination_products.id as CombinationProducts0
+        ,combination_products.name as CombinationProducts1
+        ,combination_products.db_desc as CombinationProducts2
+        ,combination_products.price as CombinationProducts3
+        ,combination_products.privilege_price as CombinationProducts4
+        ,combination_products.sum_price as CombinationProducts5
+        ,combination_products.store_id as CombinationProducts6
+    </sql>
+
+    <select id="getCombinationProductsRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from combination_products
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectCombinationProducts" parameterType="com.changjiang.common.Assist"  resultMap="result_CombinationProducts_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="combination_products_Column" /> 
+            </otherwise>
+        </choose>
+        from combination_products
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectCombinationProductsById" parameterType="java.lang.Integer" resultMap="result_CombinationProducts_Map">
+        select 
+            <include refid="combination_products_Column" /> 
+        from combination_products
+        where combination_products.id = #{id}
+    </select> 
+
+
+    <insert id="insertCombinationProducts" parameterType="com.changjiang.entity.CombinationProducts">
+        insert into combination_products(id,name,db_desc,price,privilege_price,sum_price,store_id) 
+        values(#{id},#{name},#{dbDesc},#{price},#{privilegePrice},#{sumPrice},#{storeId})
+    </insert>
+
+    <insert id="insertNonEmptyCombinationProducts" parameterType="com.changjiang.entity.CombinationProducts">
+        insert into combination_products
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="price != null">price,</if>
+            <if test="privilegePrice != null">privilege_price,</if>
+            <if test="sumPrice != null">sum_price,</if>
+            <if test="storeId != null">store_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="price != null"> #{price},</if>
+            <if test="privilegePrice != null"> #{privilegePrice},</if>
+            <if test="sumPrice != null"> #{sumPrice},</if>
+            <if test="storeId != null"> #{storeId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCombinationProductsById" parameterType="java.lang.Integer">
+        delete from combination_products
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteCombinationProducts" parameterType="com.changjiang.common.Assist">
+        delete from combination_products
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateCombinationProductsById" parameterType="com.changjiang.entity.CombinationProducts">
+        update combination_products set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,price=#{price}
+            ,privilege_price=#{privilegePrice}
+            ,sum_price=#{sumPrice}
+            ,store_id=#{storeId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyCombinationProductsById" parameterType="com.changjiang.entity.CombinationProducts">
+        update combination_products
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="price != null">
+                price=#{price},
+            </if>
+            <if test="privilegePrice != null">
+                privilege_price=#{privilegePrice},
+            </if>
+            <if test="sumPrice != null">
+                sum_price=#{sumPrice},
+            </if>
+            <if test="storeId != null">
+                store_id=#{storeId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateCombinationProducts" parameterType="map">
+        update combination_products
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                price=#{enti.price},
+                privilege_price=#{enti.privilegePrice},
+                sum_price=#{enti.sumPrice},
+                store_id=#{enti.storeId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyCombinationProducts" parameterType="map">
+        update combination_products
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.price != null">
+                price=#{enti.price},
+            </if>
+            <if test="enti.privilegePrice != null">
+                privilege_price=#{enti.privilegePrice},
+            </if>
+            <if test="enti.sumPrice != null">
+                sum_price=#{enti.sumPrice},
+            </if>
+            <if test="enti.storeId != null">
+                store_id=#{enti.storeId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

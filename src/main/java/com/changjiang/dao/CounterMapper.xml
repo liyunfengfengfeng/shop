@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.CounterDao">
+    <resultMap id="result_Counter_Map" type="com.changjiang.entity.Counter">
+        <id column="Counter0" property="id" />
+        <result column="Counter1" property="name" />
+        <result column="Counter2" property="dbDesc" />
+        <result column="Counter3" property="type" />
+        <result column="Counter4" property="store" />
+        <result column="Counter5" property="state" />
+        <result column="Counter6" property="area" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="counter_Column">
+        counter.id as Counter0
+        ,counter.name as Counter1
+        ,counter.db_desc as Counter2
+        ,counter.type as Counter3
+        ,counter.store as Counter4
+        ,counter.state as Counter5
+        ,counter.area as Counter6
+    </sql>
+
+    <select id="getCounterRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from counter
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectCounter" parameterType="com.changjiang.common.Assist"  resultMap="result_Counter_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="counter_Column" /> 
+            </otherwise>
+        </choose>
+        from counter
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectCounterById" parameterType="java.lang.Integer" resultMap="result_Counter_Map">
+        select 
+            <include refid="counter_Column" /> 
+        from counter
+        where counter.id = #{id}
+    </select> 
+	<!-- 通过id查询柜台及其对应的柜台岗位记录 -->
+	<select id="findfindCounterAndWorkStationRecord" parameterType="int" resultMap="result_Counter_Map2">
+        select * from counter where id=#{id}
+     </select>
+	<resultMap id="result_Counter_Map2" type="com.changjiang.entity.Counter">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="db_desc" property="dbDesc" />
+        <result column="type" property="type" />
+        <result column="store" property="store" />
+        <result column="state" property="state" />
+        <result column="area" property="area" />
+        <collection property="counterWorkStationRecords" ofType="com.changjiang.entity.CounterWorkStationRecord" column="id" select="getCounterWorkStationRecords"></collection>
+    </resultMap>
+	<select id="getCounterWorkStationRecords" parameterType="int" resultType="com.changjiang.entity.CounterWorkStationRecord">
+        SELECT * FROM counter_work_station_record WHERE counter_id=#{id}
+     </select>
+
+
+
+
+
+
+
+
+
+
+    <insert id="insertCounter" parameterType="com.changjiang.entity.Counter">
+        insert into counter(id,name,db_desc,type,store,state,area) 
+        values(#{id},#{name},#{dbDesc},#{type},#{store},#{state},#{area})
+    </insert>
+
+    <insert id="insertNonEmptyCounter" parameterType="com.changjiang.entity.Counter">
+        insert into counter
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="dbDesc != null">db_desc,</if>
+            <if test="type != null">type,</if>
+            <if test="store != null">store,</if>
+            <if test="state != null">state,</if>
+            <if test="area != null">area,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="dbDesc != null"> #{dbDesc},</if>
+            <if test="type != null"> #{type},</if>
+            <if test="store != null"> #{store},</if>
+            <if test="state != null"> #{state},</if>
+            <if test="area != null"> #{area},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCounterById" parameterType="java.lang.Integer">
+        delete from counter
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteCounter" parameterType="com.changjiang.common.Assist">
+        delete from counter
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateCounterById" parameterType="com.changjiang.entity.Counter">
+        update counter set
+            name=#{name}
+            ,db_desc=#{dbDesc}
+            ,type=#{type}
+            ,store=#{store}
+            ,state=#{state}
+            ,area=#{area}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyCounterById" parameterType="com.changjiang.entity.Counter">
+        update counter
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="dbDesc != null">
+                db_desc=#{dbDesc},
+            </if>
+            <if test="type != null">
+                type=#{type},
+            </if>
+            <if test="store != null">
+                store=#{store},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="area != null">
+                area=#{area},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateCounter" parameterType="map">
+        update counter
+        <set>
+                id=#{enti.id},
+                name=#{enti.name},
+                db_desc=#{enti.dbDesc},
+                type=#{enti.type},
+                store=#{enti.store},
+                state=#{enti.state},
+                area=#{enti.area},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyCounter" parameterType="map">
+        update counter
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.name != null">
+                name=#{enti.name},
+            </if>
+            <if test="enti.dbDesc != null">
+                db_desc=#{enti.dbDesc},
+            </if>
+            <if test="enti.type != null">
+                type=#{enti.type},
+            </if>
+            <if test="enti.store != null">
+                store=#{enti.store},
+            </if>
+            <if test="enti.state != null">
+                state=#{enti.state},
+            </if>
+            <if test="enti.area != null">
+                area=#{enti.area},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

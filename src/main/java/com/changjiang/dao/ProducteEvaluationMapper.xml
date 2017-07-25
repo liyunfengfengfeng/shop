@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.changjiang.dao.ProducteEvaluationDao">
+    <resultMap id="result_ProducteEvaluation_Map" type="com.changjiang.entity.ProducteEvaluation">
+        <id column="ProducteEvaluation0" property="id" />
+        <result column="ProducteEvaluation1" property="number" />
+        <result column="ProducteEvaluation2" property="evaluationRank" />
+        <result column="ProducteEvaluation3" property="evaluationContent" />
+        <result column="ProducteEvaluation4" property="evaluationTime" />
+        <result column="ProducteEvaluation5" property="evaluationPeople" />
+        <result column="ProducteEvaluation6" property="evaluationPeopleContactWay" />
+        <result column="ProducteEvaluation7" property="producteId" />
+    </resultMap>
+
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value}
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="producte_evaluation_Column">
+        producte_evaluation.id as ProducteEvaluation0
+        ,producte_evaluation.number as ProducteEvaluation1
+        ,producte_evaluation.evaluation_rank as ProducteEvaluation2
+        ,producte_evaluation.evaluation_content as ProducteEvaluation3
+        ,producte_evaluation.evaluation_time as ProducteEvaluation4
+        ,producte_evaluation.evaluation_people as ProducteEvaluation5
+        ,producte_evaluation.evaluation_people_contact_way as ProducteEvaluation6
+        ,producte_evaluation.producte_id as ProducteEvaluation7
+    </sql>
+
+    <select id="getProducteEvaluationRowCount" parameterType="com.changjiang.common.Assist" resultType="java.lang.Long">
+        select count(id) from producte_evaluation
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <select id="selectProducteEvaluation" parameterType="com.changjiang.common.Assist"  resultMap="result_ProducteEvaluation_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="producte_evaluation_Column" /> 
+            </otherwise>
+        </choose>
+        from producte_evaluation
+        <if test="require!=null"><include refid="Assist" /></if>
+        <if test="order !=null">${order}</if>
+        <if test="rowSize !=null"> LIMIT #{rowSize} <if test="startRow !=null"> OFFSET #{startRow}</if></if>
+    </select> 
+
+    <select id="selectProducteEvaluationById" parameterType="java.lang.Integer" resultMap="result_ProducteEvaluation_Map">
+        select 
+            <include refid="producte_evaluation_Column" /> 
+        from producte_evaluation
+        where producte_evaluation.id = #{id}
+    </select> 
+
+
+    <insert id="insertProducteEvaluation" parameterType="com.changjiang.entity.ProducteEvaluation">
+        insert into producte_evaluation(id,number,evaluation_rank,evaluation_content,evaluation_time,evaluation_people,evaluation_people_contact_way,producte_id) 
+        values(#{id},#{number},#{evaluationRank},#{evaluationContent},#{evaluationTime},#{evaluationPeople},#{evaluationPeopleContactWay},#{producteId})
+    </insert>
+
+    <insert id="insertNonEmptyProducteEvaluation" parameterType="com.changjiang.entity.ProducteEvaluation">
+        insert into producte_evaluation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="number != null">number,</if>
+            <if test="evaluationRank != null">evaluation_rank,</if>
+            <if test="evaluationContent != null">evaluation_content,</if>
+            <if test="evaluationTime != null">evaluation_time,</if>
+            <if test="evaluationPeople != null">evaluation_people,</if>
+            <if test="evaluationPeopleContactWay != null">evaluation_people_contact_way,</if>
+            <if test="producteId != null">producte_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="number != null"> #{number},</if>
+            <if test="evaluationRank != null"> #{evaluationRank},</if>
+            <if test="evaluationContent != null"> #{evaluationContent},</if>
+            <if test="evaluationTime != null"> #{evaluationTime},</if>
+            <if test="evaluationPeople != null"> #{evaluationPeople},</if>
+            <if test="evaluationPeopleContactWay != null"> #{evaluationPeopleContactWay},</if>
+            <if test="producteId != null"> #{producteId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteProducteEvaluationById" parameterType="java.lang.Integer">
+        delete from producte_evaluation
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteProducteEvaluation" parameterType="com.changjiang.common.Assist">
+        delete from producte_evaluation
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <update id="updateProducteEvaluationById" parameterType="com.changjiang.entity.ProducteEvaluation">
+        update producte_evaluation set
+            number=#{number}
+            ,evaluation_rank=#{evaluationRank}
+            ,evaluation_content=#{evaluationContent}
+            ,evaluation_time=#{evaluationTime}
+            ,evaluation_people=#{evaluationPeople}
+            ,evaluation_people_contact_way=#{evaluationPeopleContactWay}
+            ,producte_id=#{producteId}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyProducteEvaluationById" parameterType="com.changjiang.entity.ProducteEvaluation">
+        update producte_evaluation
+        <set>
+            <if test="number != null">
+                number=#{number},
+            </if>
+            <if test="evaluationRank != null">
+                evaluation_rank=#{evaluationRank},
+            </if>
+            <if test="evaluationContent != null">
+                evaluation_content=#{evaluationContent},
+            </if>
+            <if test="evaluationTime != null">
+                evaluation_time=#{evaluationTime},
+            </if>
+            <if test="evaluationPeople != null">
+                evaluation_people=#{evaluationPeople},
+            </if>
+            <if test="evaluationPeopleContactWay != null">
+                evaluation_people_contact_way=#{evaluationPeopleContactWay},
+            </if>
+            <if test="producteId != null">
+                producte_id=#{producteId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateProducteEvaluation" parameterType="map">
+        update producte_evaluation
+        <set>
+                id=#{enti.id},
+                number=#{enti.number},
+                evaluation_rank=#{enti.evaluationRank},
+                evaluation_content=#{enti.evaluationContent},
+                evaluation_time=#{enti.evaluationTime},
+                evaluation_people=#{enti.evaluationPeople},
+                evaluation_people_contact_way=#{enti.evaluationPeopleContactWay},
+                producte_id=#{enti.producteId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <update id="updateNonEmptyProducteEvaluation" parameterType="map">
+        update producte_evaluation
+        <set>
+            <if test="enti.id != null">
+                id=#{enti.id},
+            </if>
+            <if test="enti.number != null">
+                number=#{enti.number},
+            </if>
+            <if test="enti.evaluationRank != null">
+                evaluation_rank=#{enti.evaluationRank},
+            </if>
+            <if test="enti.evaluationContent != null">
+                evaluation_content=#{enti.evaluationContent},
+            </if>
+            <if test="enti.evaluationTime != null">
+                evaluation_time=#{enti.evaluationTime},
+            </if>
+            <if test="enti.evaluationPeople != null">
+                evaluation_people=#{enti.evaluationPeople},
+            </if>
+            <if test="enti.evaluationPeopleContactWay != null">
+                evaluation_people_contact_way=#{enti.evaluationPeopleContactWay},
+            </if>
+            <if test="enti.producteId != null">
+                producte_id=#{enti.producteId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>
